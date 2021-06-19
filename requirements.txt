@@ -5,4 +5,3 @@ panda
 matplotlib
 pyodbc
 gunicorn
-python
