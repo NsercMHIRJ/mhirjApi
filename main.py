@@ -34,7 +34,11 @@ app = FastAPI()
 #     "http://localhost:8000",
     
 # ]
-origins=['*']
+origins=[
+	"http://localhost:*",
+    	"http://127.0.0.1:*",
+	"http://lively-grass-011bafa10.azurestaticapps.net"
+]
 """Create a list of allowed origins ( as strings)
 """
 app.add_middleware(
