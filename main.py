@@ -200,7 +200,7 @@ def connect_database_MDCdata(ata, excl_eqid, airline_operator, include_current_m
                 excl_eqid) + " AND airline_id = " + str(
                 airline_id) + " AND DateAndTime BETWEEN '" + from_dt + "' AND '" + to_dt + "'"
 
-    column_names = ["Aircraft", "Tail#", "Flight Leg No",
+    column_names = ["Aircraft", "Tail", "Flight Leg No",
                "ATA Main", "ATA Sub", "ATA", "ATA Description", "LRU",
                "DateAndTime", "MDC Message", "Status", "Flight Phase", "Type",
                "Intermittent", "Equation ID", "Source", "Diagnostic Data",
