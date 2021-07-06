@@ -200,7 +200,7 @@ def connect_database_MDCdata(ata, excl_eqid, airline_operator, include_current_m
                 excl_eqid) + " AND airline_id = " + str(
                 airline_id) + " AND DateAndTime BETWEEN '" + from_dt + "' AND '" + to_dt + "'"
 
-    column_names = ["Aircraft", "Tail", "Flight Leg No",
+    column_names = ["Aircraft", "Tail#", "Flight Leg No",
                "ATA Main", "ATA Sub", "ATA", "ATA Description", "LRU",
                "DateAndTime", "MDC Message", "Status", "Flight Phase", "Type",
                "Intermittent", "Equation ID", "Source", "Diagnostic Data",
@@ -2602,7 +2602,7 @@ async def generateFlagReport(analysisType: str, occurences: int, legs: int, inte
 
 ##############################     CHARTS    ##############################
 
-
+''' old code snippet till - 05/07/21
 ## Chart 1
 def connect_database_for_chart1(n, aircraft_no, from_dt, to_dt):
     sql = "SELECT DISTINCT TOP "+str(n)+" Count(MDCMessagesInputs.Message) AS "'total_message'", Airline_MDC_Data. Equation_ID, MDCMessagesInputs.Message, MDCMessagesInputs.EICAS, Airline_MDC_Data.LRU, Airline_MDC_Data.ATA FROM Airline_MDC_Data INNER JOIN MDCMessagesInputs ON Airline_MDC_Data.ATA = MDCMessagesInputs.ATA AND Airline_MDC_Data.Equation_ID = MDCMessagesInputs.Equation_ID WHERE Airline_MDC_Data.aircraftno = "+str(aircraft_no)+" AND Airline_MDC_Data.DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"' GROUP BY Airline_MDC_Data.Equation_ID, MDCMessagesInputs.Message, MDCMessagesInputs.EICAS, Airline_MDC_Data.LRU, Airline_MDC_Data.ATA ORDER BY Count(MDCMessagesInputs.Message) DESC"
@@ -2621,6 +2621,45 @@ def connect_database_for_chart1(n, aircraft_no, from_dt, to_dt):
 @app.post("/api/chart_one/{top_n}/{aircraftNo}/{fromDate}/{toDate}")
 async def get_ChartOneData(top_n:int, aircraftNo:int, fromDate: str , toDate: str):
     chart1_sql_df = connect_database_for_chart1(top_n, aircraftNo, fromDate, toDate)
+    chart1_sql_df_json = chart1_sql_df.to_json(orient='records')
+    return chart1_sql_df_json
+'''
+
+## Chart 1
+def connect_database_for_chart1(n, aircraft_no, ata_main, from_dt, to_dt):
+    all_ata_str_list = []
+    if ata_main == 'ALL':
+        all_ata = connect_to_fetch_all_ata(from_dt, to_dt)
+
+        all_ata_str = "("
+        all_ata_list = all_ata['ATA_Main'].tolist()
+        for each_ata in all_ata_list:
+            all_ata_str_list.append(str(each_ata))
+            all_ata_str += "'"+str(each_ata)+"'"
+            if each_ata != all_ata_list[-1]:
+                all_ata_str += ","
+            else:
+                all_ata_str += ")"
+        print(all_ata_str)
+
+    if ata_main == 'ALL':
+        sql = "SELECT DISTINCT TOP "+str(n)+" Count(MDCMessagesInputs.Message) AS "'total_message'", Airline_MDC_Data. Equation_ID, MDCMessagesInputs.Message, MDCMessagesInputs.EICAS, Airline_MDC_Data.LRU, Airline_MDC_Data.ATA FROM Airline_MDC_Data INNER JOIN MDCMessagesInputs ON Airline_MDC_Data.ATA = MDCMessagesInputs.ATA AND Airline_MDC_Data.Equation_ID = MDCMessagesInputs.Equation_ID WHERE Airline_MDC_Data.aircraftno = "+str(aircraft_no)+" AND ATA_Main IN " + str(all_ata_str) + " AND Airline_MDC_Data.DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"' GROUP BY Airline_MDC_Data.Equation_ID, MDCMessagesInputs.Message, MDCMessagesInputs.EICAS, Airline_MDC_Data.LRU, Airline_MDC_Data.ATA ORDER BY Count(MDCMessagesInputs.Message) DESC"
+    else:
+        sql = "SELECT DISTINCT TOP "+str(n)+" Count(MDCMessagesInputs.Message) AS "'total_message'", Airline_MDC_Data. Equation_ID, MDCMessagesInputs.Message, MDCMessagesInputs.EICAS, Airline_MDC_Data.LRU, Airline_MDC_Data.ATA FROM Airline_MDC_Data INNER JOIN MDCMessagesInputs ON Airline_MDC_Data.ATA = MDCMessagesInputs.ATA AND Airline_MDC_Data.Equation_ID = MDCMessagesInputs.Equation_ID WHERE Airline_MDC_Data.aircraftno = "+str(aircraft_no)+" AND ATA_Main IN " + str(ata_main) + " AND Airline_MDC_Data.DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"' GROUP BY Airline_MDC_Data.Equation_ID, MDCMessagesInputs.Message, MDCMessagesInputs.EICAS, Airline_MDC_Data.LRU, Airline_MDC_Data.ATA ORDER BY Count(MDCMessagesInputs.Message) DESC"
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        chart1_sql_df = pd.read_sql(sql, conn)
+        #MDCdataDF.columns = column_names
+        return chart1_sql_df
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+
+@app.post("/api/chart_one/{top_n}/{aircraftNo}/{ata_main}/{fromDate}/{toDate}")
+async def get_ChartOneData(top_n:int, aircraftNo:int, ata_main:str, fromDate: str , toDate: str):
+    chart1_sql_df = connect_database_for_chart1(top_n, aircraftNo, ata_main, fromDate, toDate)
     chart1_sql_df_json = chart1_sql_df.to_json(orient='records')
     return chart1_sql_df_json
 
