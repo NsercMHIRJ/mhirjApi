@@ -2949,7 +2949,7 @@ def connect_db_MDCdata_chartb(from_dt, to_dt):
                     "Data Used to Determine Msg", "ID", "Flight", "airline_id", "aircraftno"]
     print(sql)
     try:
-        conn = pyodbc.connect(driver='{SQL Server}', host=hostname, database=db_name,
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
                               user=db_username, password=db_password)
         MDCdataDF_chartb = pd.read_sql(sql, conn)
         MDCdataDF_chartb.columns = column_names
