@@ -87,7 +87,7 @@ def connect_to_fetch_all_jam_messages():
         print("Error message:- " + str(err))
 
 
-listofJamMessages = list()
+#listofJamMessages = list()
 # all_jam_messages = connect_to_fetch_all_jam_messages()
 # for each_jam_message in all_jam_messages['Jam_Message']:
 #     listofJamMessages.append(each_jam_message)
@@ -324,7 +324,7 @@ async def generateReport(analysisType: str, occurences: int, legs: int, intermit
     #Bcode = equationID
     newreport = True    #set a counter variable to bring back it to false
 
-    if(analysisType == "daily"):
+    if(analysisType.lower() == "daily"):
 
         #global UniqueSerialNumArray
 
@@ -619,12 +619,26 @@ async def generateReport(analysisType: str, occurences: int, legs: int, intermit
               "Intermittent", "Reason(s) for flag", "Priority", "Known Top Message - Recommended Documents",
               "MHIRJ ISE Recommendation", "Additional Comments", "MHIRJ ISE Input"]] # Tail# added to output table which means that column order has to be re ordered
         
-        OutputTableDaily_json = OutputTableDaily.to_json(orient = 'records')
+        #OutputTableDaily_json = OutputTableDaily.to_json(orient = 'records')
         #OutputTableDaily.to_csv("OutputTableDaily.csv")
+        #return OutputTableDaily_json
+	
+	listofJamMessages = list()
+        all_jam_messages = connect_to_fetch_all_jam_messages()
+        for each_jam_message in all_jam_messages['Jam_Message']:
+            listofJamMessages.append(each_jam_message)
+        print(listofJamMessages)
 
+        # highlight function starts here
+        OutputTableDaily = OutputTableDaily.assign(
+            is_jam=lambda dataframe: dataframe['B1-Equation'].map(lambda c: True if c in listofJamMessages else False)
+        )
+        print(OutputTableDaily)
+
+        OutputTableDaily_json = OutputTableDaily.to_json(orient='records')
         return OutputTableDaily_json
 
-    elif(analysisType == "history"):
+    elif(analysisType.lower() == "history"):
         #global UniqueSerialNumArray
 
         HistoryanalysisDF = MDCdataDF
@@ -968,7 +982,23 @@ async def generateReport(analysisType: str, occurences: int, legs: int, intermit
              "MHIRJ ISE Recommendation", "Additional Comments",
              "MHIRJ ISE Input"]]  # Tail# added to output table which means that column order has to be re ordered
         #OutputTableHistory.to_csv("OutputTableHistory.csv")
-        OutputTableHistory_json = OutputTableHistory.to_json(orient = 'records')
+        #OutputTableHistory_json = OutputTableHistory.to_json(orient = 'records')
+        #return OutputTableHistory_json
+	
+	# Get the list of JAM Messages.
+        listofJamMessages = list()
+        all_jam_messages = connect_to_fetch_all_jam_messages()
+        for each_jam_message in all_jam_messages['Jam_Message']:
+            listofJamMessages.append(each_jam_message)
+        print(listofJamMessages)
+
+        # HIGHLIGHT function starts here
+        OutputTableHistory = OutputTableHistory.assign(
+            is_jam=lambda dataframe: dataframe['B1-Equation'].map(lambda c: True if c in listofJamMessages else False)
+        )
+        print(OutputTableHistory)
+
+        OutputTableHistory_json = OutputTableHistory.to_json(orient='records')
         return OutputTableHistory_json
 
 
