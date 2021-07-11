@@ -87,12 +87,8 @@ def connect_to_fetch_all_jam_messages():
         print("Error message:- " + str(err))
 
 
-#listofJamMessages = list()
-# all_jam_messages = connect_to_fetch_all_jam_messages()
-# for each_jam_message in all_jam_messages['Jam_Message']:
-#     listofJamMessages.append(each_jam_message)
-# #print(listofJamMessages)
-#
+listofJamMessages = list()
+
 
 
 def convert_array_to_tuple(array_list):
@@ -619,11 +615,11 @@ async def generateReport(analysisType: str, occurences: int, legs: int, intermit
               "Intermittent", "Reason(s) for flag", "Priority", "Known Top Message - Recommended Documents",
               "MHIRJ ISE Recommendation", "Additional Comments", "MHIRJ ISE Input"]] # Tail# added to output table which means that column order has to be re ordered
         
-        #OutputTableDaily_json = OutputTableDaily.to_json(orient = 'records')
-        #OutputTableDaily.to_csv("OutputTableDaily.csv")
-        #return OutputTableDaily_json
+        # OutputTableDaily_json = OutputTableDaily.to_json(orient = 'records')
+        # OutputTableDaily.to_csv("OutputTableDaily.csv")
+        # return OutputTableDaily_json
 	
-	listofJamMessages = list()
+        listofJamMessages = list()
         all_jam_messages = connect_to_fetch_all_jam_messages()
         for each_jam_message in all_jam_messages['Jam_Message']:
             listofJamMessages.append(each_jam_message)
