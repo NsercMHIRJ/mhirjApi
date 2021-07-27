@@ -23,6 +23,8 @@ from typing import Optional
 templates = Jinja2Templates(directory="templates")
 import os
 import urllib
+from fastapi import FastAPI, File, UploadFile
+from crud import *
 
 
 app = FastAPI()
@@ -3202,3 +3204,8 @@ async def get_eqIData(all:str):
     report_ata_main_sql_df = connect_database_for_ata_main(all)
     report_ata_main_sql_df_json = report_ata_main_sql_df.to_json(orient='records')
     return report_ata_main_sql_df_json
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile = File(...)):
+    result = insertData(file)
+    return {"result": result}    
