@@ -1802,7 +1802,7 @@ async def generateJamsReport(analysisType: str, occurences: int, legs: int, inte
         FinalDF = datatofilter3.loc[pd.IndexSlice[listoftuplesACFL], :]
         print(FinalDF)
         #return FinalDF.loc[ACSN_chosen]
-        FinalDF_history_json = (FinalDF.loc[ACSN_chosen]).to_json(orient='records')
+        FinalDF_history_json = (FinalDF.loc[str(ACSN_chosen)]).to_json(orient='records')
         return FinalDF_history_json
 
 
