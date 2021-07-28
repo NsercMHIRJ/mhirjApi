@@ -23,6 +23,8 @@ from typing import Optional
 templates = Jinja2Templates(directory="templates")
 import os
 import urllib
+from fastapi import FastAPI, File, UploadFile
+from crud import *
 
 
 app = FastAPI()
@@ -1391,24 +1393,36 @@ async def generateJamsReport(analysisType: str, occurences: int, legs: int, inte
         all_jam_messages = connect_to_fetch_all_jam_messages()
         for each_jam_message in all_jam_messages['Jam_Message']:
             listofJamMessages.append(each_jam_message)
-        print(listofJamMessages)
+        # print(listofJamMessages)
         OutputTable = OutputTableDaily
-
+        # print(OutputTable)
         datatofilter = MDCdataDF.copy(deep=True)
         # print(datatofilter)
         isin = OutputTable["B1-Equation"].isin(listofJamMessages)
         filter1 = OutputTable[isin][["AC SN", "B1-Equation"]]
         listoftuplesACID = list(zip(filter1["AC SN"], filter1["B1-Equation"]))
-
+        print("listoftuplesACID :::")
+        print(listoftuplesACID)
         datatofilter2 = datatofilter.set_index(["Aircraft", "Equation ID"]).sort_index().loc[
                         pd.IndexSlice[listoftuplesACID], :].reset_index()
         listoftuplesACFL = list(zip(datatofilter2["Aircraft"], datatofilter2["Flight Leg No"]))
+        print("datatofilter2 :::")
+        print(datatofilter2)
 
         datatofilter3 = datatofilter.set_index(["Aircraft", "Flight Leg No"]).sort_index()
         FinalDF = datatofilter3.loc[pd.IndexSlice[listoftuplesACFL], :]
+        print("\n---datatofilter3 :::")
+        print(datatofilter3)
+
+        print("\n----FinalDF :::")
         print(FinalDF)
-        #return FinalDF.loc[ACSN_chosen]
-        FinalDF_daily_json = (FinalDF.loc[ACSN_chosen]).to_json(orient='records')
+        # return FinalDF.loc[ACSN_chosen]
+        print("\n----ACSN_chosen :::")
+        print(ACSN_chosen)
+        print("\n----ACSN_chosen 2:::")
+        print(FinalDF.loc[str(ACSN_chosen)])
+        
+        FinalDF_daily_json = (FinalDF.loc[str(ACSN_chosen)]).to_json(orient='records')
         return FinalDF_daily_json
 
     elif (analysisType == "history"):
@@ -3202,5 +3216,10 @@ async def get_eqIData(all:str):
     report_ata_main_sql_df = connect_database_for_ata_main(all)
     report_ata_main_sql_df_json = report_ata_main_sql_df.to_json(orient='records')
     return report_ata_main_sql_df_json
+
+@app.post("/uploadfile/")
+async def create_upload_file(file: UploadFile = File(...)):
+    result = insertData(file)
+    return {"result": result}      
 
 
