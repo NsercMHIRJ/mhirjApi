@@ -3217,9 +3217,18 @@ async def get_eqIData(all:str):
     report_ata_main_sql_df_json = report_ata_main_sql_df.to_json(orient='records')
     return report_ata_main_sql_df_json
 
-@app.post("/uploadfile/")
+@app.post("/api/uploadfile_airline_mdc_raw_data/")
 async def create_upload_file(file: UploadFile = File(...)):
     result = insertData(file)
     return {"result": result}      
-
+    
+@app.post("/api/uploadfile_input_message_data/")
+async def create_upload_file1(file: UploadFile = File(...)):
+    result = insertData_MDCMessageInputs(file)
+    return {"result": result} 
+      
+@app.post("/api/uploadfile_top_message_data/")
+async def create_upload_file2(file: UploadFile = File(...)):
+    result = insertData_TopMessageSheet(file)
+    return {"result": result}   
 

@@ -1,0 +1,150 @@
+LRU,ATA,Message,Comp ID,Message1,Fault Logged,Status,Message Type,EICAS,Timer,Logic,Equation Description,Equation ID,Occurance Flag,Days Count,Priority,MHIRJ ISE Recommended Action,Additional Comments,MHIRJ ISE inputs,MEL or No-Dispatch
+,21-31,1,A106,NO CPC-1 BUS OUTPUT,"AIR,TAXI",OFF/NO OUTPUT,Fault Message,AUTO PRESS 1 FAIL (white),3,"[2 OF DCU3-40, DCU2-39, DCU1-39] AND [1 OF CPCP-7,CPC2-8]",DCUs are not receiving any Arinc429 data from the Left CPC. Thecontroller has at least oneconnector OFF or is not installedor not powered.,B1-006127,0,0,0,0,0,0,0
+CPC 1,21-31,2,A106,NO CPC-1 BUS TO DCU,"AIR,TAXI",OFF/NO OUTPUT,Fault Message,AUTO PRESS 1 FAIL (white),10,"[2 OF DCU3-40, DCU2-39, DCU1-39]",DCUs are not receiving any Arinc429 data from the Left CPC. Thecontroller has at least oneconnector OFF or is not installedor not powered.,B1-006128,0,0,0,0,0,0,0
+CPC 1,21-31,3,A106,INTERNAL PRESS SNSR FAIL,"AIR,TAXI",FAILED,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-4,Failure has been detected in thepressure acquisition chain. CPC isnot able to control cabin pressureany more.,B1-006129,0,0,0,0,0,0,0
+CPC 1,21-31,4,A106,NO LA&RA-IOC-6 BUS INPUT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-6 AND CPC1-7,ARINC 429 data is missing on thebus or no data is received oninputs from both IOC busses. Theproblem may be either data missingon the bus or the busitself(wiring).,B1-006130,0,0,0,0,0,0,0
+CPC 1,21-31,5,A106,NO OUTFLOW VLV BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-11,No data is received on RS422 inputfrom the Outflow valve.,B1-006131,0,0,0,0,0,0,0
+CPC 1,21-31,6,A106,AUTO1 DISABLE FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 1 FAIL (WHITE),3,CPC1-12,"Discrete disable signal of theautomatic channel 1 is no moreoperative, however the valve maystill remain operative",B1-006132,0,0,0,0,0,0,0
+CPC 1,21-31,7,A106,NO CPC-2 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-8,No data is received on Arinc 429input from the CPC 2.,B1-006133,0,0,0,0,0,0,0
+CPC 1,21-31,8,A106,LDG ELEV SIGNAL FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-14,CPC 1 is not able to read thecockpit panel Landing Elevationselection. Failure in theacquisition chain occurred.,B1-006134,0,0,0,0,0,0,0
+CPC 1,21-31,9,A106,AUTO1 DISABLE FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-12,"Discrete disable signal of theautomatic channel 1 is no moreoperative, however the valve maystill remain operative.",B1-006135,0,0,0,0,0,0,0
+CPC 1,21-31,10,A106,NO CPCP BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,10,CPC1-9,No data is received on Arinc 429input from the Cabin PressureControl Panel.,B1-006136,0,0,0,0,0,0,0
+CPC 1,21-31,11,A106,NO LA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,CPC1-6 AND NOT IC1A-1,ARINC 429 data is either missingor no data is received on inputfrom LA-IOC. The problem may beeither data missing on the bus orthe bus itself(wiring).,B1-006137,0,0,0,0,0,0,0
+CPC 1,21-31,12,A106,NO RA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,CPC1-7 AND NOT IC2A-1,ARINC 429 data is either missingor no data is received on inputfrom RA-IOC. The problem may beeither data missing on the bus orthe bus itself (wiring).,B1-006138,0,0,0,0,0,0,0
+CPC 1,21-31,13,A106,INVALID CONFIG STRAPPING,"AIR,TAXI",LRU OK / INFO,Service Message,,10,CPC1-3,Pin Programming disagree has beendetected by CPC 1.,B1-006139,0,0,0,0,0,0,0
+CPC 1,21-31,14,A106,INTERNAL FAULT,"AIR,TAXI",FAILED,Service Message,,10,CPC1-5,Some component failure has beendetected. This failure does notcompletely prevent the CPC 1 tooperate the systems.,B1-006140,0,0,0,0,0,0,0
+CPC 2,21-31,1,A107,NO CPC-2 BUS OUTPUT,"AIR,TAXI",OFF/NO OUTPUT,Fault Message,AUTO PRESS 2 FAIL (white),3,"[2 OF DCU1-40, DCU2-40, DCU3-41] AND [1 OF CPC1-8,CPCP-8]",DCUs are not receiving any Arinc429 data from the Right CPC. Thecontroller has at least oneconnector OFF or is not installedor not powered.,B1-006141,0,0,0,0,0,0,0
+CPC 2,21-31,2,A107,NO CPC-2 BUS TO DCU,"AIR,TAXI",OFF/NO OUTPUT,Fault Message,AUTO PRESS 2 FAIL (white),10,"[2 OF DCU1-40, DCU2-40, DCU3-41]",DCUs are not receiving any Arinc429 data from the Right CPC. Thecontroller has at least oneconnector OFF or is not installedor not powered.,B1-006142,0,0,0,0,0,0,0
+CPC 2,21-31,3,A107,INTERNAL PRESS SNSR FAIL,"AIR,TAXI",FAILED,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-4,Failure has been detected in thepressure acquisition chain. CPC isnot able to control cabin pressureany more.,B1-006143,0,0,0,0,0,0,0
+CPC 2,21-31,4,A107,NO LB&RB-IOC-6 BUS INPUT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-6 AND CPC2-7,ARINC 429 data is missing on thebus or no data is received oninputs from both IOC busses. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-006144,0,0,0,0,0,0,0
+CPC 2,21-31,5,A107,AUTO2 DISABLE FAULT,"AIR,TAXI",LRU OK / INFO,Fault Message,,3,CPC2-12,"Discrete disable signal of theautomatic channel 2 is no moreoperative, however the valve stillremains operative.",B1-006145,0,0,0,0,0,0,0
+CPC 2,21-31,6,A107,NO OUTFLOW VLV BUS INPUT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-11,No data is received on RS422 inputfrom the Outflow valve.,B1-006146,0,0,0,0,0,0,0
+CPC 2,21-31,7,A107,NO CPC-1 BUS INPUT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-8,No data is received on Arinc 429input from the CPC 1.,B1-006147,0,0,0,0,0,0,0
+CPC 2,21-31,8,A107,LDG ELEV SIGNAL FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 2 FAIL (S),10,CPC2-14,CPC 2 is not able to read thecockpit panel Landing Elevationselection. Failure in theacquisition chain occurred.,B1-006148,0,0,1,"Follow FIM 21−31−04−810−820:
+1. Control panel
+2. Wiring
+3. CPC",CPCP internal pressure sensor failure,"MDT logic: CPC2 (SDI10) L350b24 set = Land Elev Selection 1 Fail
+CPCP internal pressure sensor failure .
+",21-31-01
+CPC 2,21-31,9,A107,AUTO2 DISABLE FAULT,"AIR,TAXI",LRU OK / INFO,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-12,"Discrete disable signal of theautomatic channel 2 is no moreoperative, however the valve stillremains operative.",B1-006149,0,0,0,0,0,0,0
+CPC 2,21-31,10,A107,NO CPCP BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,10,CPC2-9,No data is received on Arinc 429input from the Cabin PressureControl Panel.,B1-006150,0,0,0,0,0,0,0
+CPC 2,21-31,11,A107,NO LB-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,CPC2-6 AND NOT IC1B-1,ARINC 429 data is either missingor no data is received on inputfrom LB-IOC. The problem may beeither data missing on the bus orthe bus itself (wiring).,B1-006151,0,0,0,0,0,0,0
+CPC 2,21-31,12,A107,NO RB-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,CPC2-7 AND NOT IC2B-1,ARINC 429 data is either missingor no data is received on inputfrom RB-IOC. The problem may beeither data missing on the bus orthe bus itself (wiring).,B1-006152,0,0,0,0,0,0,0
+CPC 2,21-31,13,A107,INVALID CONFIG STRAPPING,"AIR,TAXI",LRU OK / INFO,Service Message,,10,CPC2-3,Pin Programming disagree has beendetected by CPC 2.,B1-006153,0,0,0,0,0,0,0
+CPC 2,21-31,14,A107,INTERNAL FAULT,"AIR,TAXI",FAILED,Service Message,,10,CPC2-5,Some component failure has beendetected. This failure does notcompletely prevent the CPC 2 tooperate the systems.,B1-006154,0,0,0,0,0,0,0
+CPC PNL,21-31,1,PL009,NO CPCP BUS OUTPUT,"AIR,TAXI",OFF/NO OUTPUT,Fault Message,CPAM FAIL (white),3,"[2 OF DCU1-42, DCU2-42, DCU3-43] AND [1 OF CPC1-9,CPC2-9]",DCUs are not receiving any Arinc429 data from CPC Panel. Thecontroller has at least oneconnector OFF or is not installedor not powered.,B1-006155,0,0,0,0,0,0,0
+CPC PNL,21-31,2,PL009,NO CPCP BUS TO DCU,"AIR,TAXI",OFF/NO OUTPUT,Fault Message,CPAM FAIL (white),10,"[2 OF DCU1-42, DCU2-42, DCU3-43]",DCUs are not receiving any Arinc429 data from CPC Panel. Thecontroller has at least oneconnector OFF or is not installedor not powered.,B1-006156,0,0,0,0,0,0,0
+CPC PNL,21-31,3,PL009,ALT LIMIT FUNCTION INOP,"AIR,TAXI",FAILED,Fault Message,ALT LIMITER (amber),10,CPCP-9,Manual outflow valvesactuator/wiring or Altitudelimitation hardware function havebeen detected inoperative duringPower-up test.,B1-006157,0,0,0,0,0,0,0
+CPC PNL,21-31,4,PL009,INTERNAL PRESS SNSR FAIL,"AIR,TAXI",FAILED,Fault Message,ALT LIMITER (amber),10,CPCP-3,Failure has been detected in thepressure acquisition chain. CPCPis not able to provide cabinpressure data any more.,B1-006158,0,0,0,0,0,0,0
+CPC PNL,21-31,5,PL009,NO LA&RA-IOC-6 BUS INPUT,"AIR,TAXI",FAILED/WIRING,Fault Message,CPAM FAIL (white),10,CPCP-5 AND CPCP-6,ARINC 429 data is either missingor no data is received on inputsfrom both IOC busses. The problemmay be either data missing on thebus or the bus itself (wiring).,B1-006159,0,0,0,0,0,0,0
+CPC PNL,21-31,6,PL009,NO CPC-1 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,10,CPCP-7,No data received on Arinc 429input from the CPC 1.,B1-006160,0,0,0,0,0,0,0
+CPC PNL,21-31,7,PL009,NO CPC-2 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,10,CPCP-8,No data received on Arinc 429input from the CPC 2.,B1-006161,0,0,0,0,0,0,0
+CPC PNL,21-31,8,PL009,NO LA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,CPCP-5 AND NOT IC1A-1,ARINC 429 data is either missingor no data is received on inputfrom LA-IOC. The problem may beeither data missing on the bus orthe bus itself (wiring).,B1-006162,0,0,0,0,0,0,0
+CPC PNL,21-31,9,PL009,NO RA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,CPCP-6 AND NOT IC2A-1,ARINC 429 data is either missingor no data is received on inputfrom RA-IOC. The problem may beeither data missing on the bus orthe bus itself (wiring).,B1-006163,0,0,0,0,0,0,0
+CPC PNL,21-31,10,PL009,INTERNAL FAULT,"AIR,TAXI",FAILED,Service Message,,10,CPCP-4,Some component failure has beendetected. This failure does notcompletely prevent the CPC Panelto operate the systems.,B1-006164,0,0,0,0,0,0,0
+GROUND VLV RLY,21-31,1,K42,NO RESPONSE TO CMD,"AIR,TAXI",FAILED/WIRING,Service Message,,3,CPCP-11,"The cpcp monitoring logicindicates a failure of the relaycontrol by the PSEU. However, thisdoes not prevent the CPCP tocontrol the Ground Valve.",B1-006897,0,0,1,"Follow FIM 21−24−18−810−802:
+1. Defective wiring interface.
+2. Defective wiring interface (relay K42 energizing circuit).
+3. Defective wiring interface (WOFW monitoring circuit).
+4. Relay K42 unserviceable.
+5. Cabin pressure control panel (CPCP) PL9 unserviceable.","This is a new FIM updated task (This specialist input is from Sep/2020)
+Make sure that if there are wiring with splices, that they are crimped correctly. MX are often using the incorrect wire crimp gage.","MDT Logic: CPCP L350b25 set.
+b25 = Ground Valve Control Fail
+FIM task updated recently (Specialist input Sep/2020)
+
+Make sure that if there are wiring with splices, that they are crimped correctly. MX are often using the incorrect wire crimp gage.",0
+GROUND VLV,21-31,1,MPE24,NO CONTROL/POS DISAGREE,"AIR,TAXI",FAILED/WIRING,Fault Message,OVBD COOL (C) / OVBD COOL FAIL (S),10,CPCP-10,"CPCP is not able to control GroundValve as required, or a disagreehas been detected during themonitoring of the valve position.Depending on the aircraft flightsequence and the valve positiondetected, either ""OVBD COOL""caution message orOVBD COOL FAIL status messagewill be displayed.",B1-006170,0,0,1,"Follow FIM TASK 21−24−18−810−801:
+1. Defective wiring interface
+2. Ground valve MPE24 unserviceable
+3. Cabin pressure−control panel (CPCP) PL9 unserviceable.","The FIM was revised 2019.
+Make sure that if there are wiring with splices, that they are crimped correctly. MX are often using the incorrect wire crimp gage.","Sometimes operators cycle the Pax door handle as a reset procedure.
+
+Make sure that if there are wiring with splices, that they are crimped correctly. MX are often using the incorrect wire crimp gage.",21-24-07
+OUTFLOW VLV,21-31,1,MPE23,AUTO CHANNELS INOP,"AIR,TAXI",FAILED,Fault Message,AUTO PRESS (amber),10,CPC1-13 AND CPC2-13,Both automatic channels of theOutflow valve are inoperative. LRUhas to be replaced before nextdispatch.,B1-006165,0,0,0,0,0,0,0
+OUTFLOW VLV,21-31,2,MPE23,AUTO CH1 FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-13,The Automatic channel 1 isinoperative.,B1-006166,0,0,0,0,0,0,0
+OUTFLOW VLV,21-31,3,MPE23,AUTO CH2 FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-13,The Automatic channel 2 isinoperative.,B1-006167,0,0,0,0,0,0,0
+OUTFLOW VLV,21-31,4,MPE23,NO CPC-1 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,AUTO PRESS 1 FAIL (white),10,CPC1-10,No data is received on RS422 inputfrom the Outflow valve.,B1-006168,0,0,0,0,0,0,0
+OUTFLOW VLV,21-31,5,MPE23,NO CPC-2 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,AUTO PRESS 2 FAIL (white),10,CPC2-10,No data is received on RS422 inputfrom the Outflow valve.,B1-006169,0,0,0,0,0,0,0
+SAFETY VLV1,21-31,1,V07,OPEN POSITION SIGNAL,"AIR,TAXI",FAILED/WIRING,Service Message,,10,CPC1-15,Safety Valve 1 is seen open whenshould be closed. (CBIT),B1-006171,0,0,1,"1. Check insulation around safety valve, may have displaced and obstructs full closed valve. Ref: SB 670BA-25-028 -A. Operators should let Liebherr know that they want the improved, GG698 valve.
+Follow FIM 21−32−03−810−801:
+(FIM revised to include the insulation)
+1. SFV1 V7 unserviceable.
+2. Defective SFV1 V7 wiring interface.",SV upgrade is approx. $2300.00 US. This is a good proactive approach. Use the MDC to target the required aircraft.,"MDT logic: CPC1 L350b29 set
+b29 = Safety Valve 1 Open
+(when it should be closed)
+
+Safety Valve #1 (top 19 msg) posting less than #2.",0
+SAFETY VLV2,21-31,1,V08,OPEN POSITION SIGNAL,"AIR,TAXI",FAILED/WIRING,Service Message,,10,CPC2-15,Safety Valve 2 is seen open whenshould be closed. (CBIT),B1-006172,0,0,1,"1. Check insulation around safety valve, may have displaced and obstructs full closed valve. Ref: SB 670BA-25-028 -A. Operators should let Liebherr know that they want the improved, GG698 valve.
+Follow FIM 21−32−03−810−802: 
+(FIM revised to include the insulation)
+1. SFV2 V8 unserviceable
+2. Defective SFV2 V8 wiring interface",SV upgrade is approx. $2300.00 US. This is a good proactive approach. Use the MDC to target the required aircraft.,"MDT logic: CPC2 L350b29 set
+b29 = Safety Valve 2 Open
+(when it should be closed)
+
+Safety Valve #2 (top 15 msg) posting more than #1.",0
+ACSC 1,21-61,1,A100,"NO ACSC1A,1B BUS TO DCU","AIR,TAXI",OFF/NO OUTPUT,Fault Message,CAS MESSAGE: L ENG BLEED (AMBER),5,"ACSC1-45 AND ACSC1-46 AND ACSC1-1 AND ACSC1-2 AND[2 OF DCU2-10, DCU2-11, DCU1-10, DCU1-11]",DCUs are not receiving any Arinc429 data from left ACSC. TheController has at least oneconnector OFF or is not installedor not powered.,B1-005811,0,0,0,0,0,0,0
+ACSC 1,21-61,2,A100,INTERNAL FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,,3,(ACSC1-35 AND NOT ACSC1-79) OR (ACSC1-36 ANDNOT ACSC1-80) OR (ACSC1-37 AND NOT ACSC1-81) OR (NOT ACSC1-35 AND ACSC1-79) OR (NOT ACSC1-36 ANDACSC1-80) OR (NOT ACSC1-37 AND ACSC1-81),Internal Fault,B1-005812,0,0,1,"1. Reset per SL procedure: 
+a) Reset procedure
+b) Wait for 30 sec., then select L Pack Manual Mode 
+c) Wait for 30 sec., and then select Pack Auto Mode. 
+d) If still cycling Swap ACSC. If not replace ACSC. Do not remove sensors
+2. Follow FIM 21−61−04−810−81:
+NOTE:Bombardier strongly recommends to swap ASCSs before replacing the LRUs. Byswapping LRUs, you will verify the integrity of the ASCSs. Go to Fault Confirmation.
+1. Pack Discharge Pressure Sensor (PDPS) MT13 unserviceable.
+2. Pack Inlet Flow Sensor (PIFS) MT11 unserviceable.
+3. Pack Inlet Pressure Sensor (PIPS) MT9 unserviceable.
+4. Defective wiring interface between Air Conditioning System Controller #1 (ACSC 1)and oneof the pressure sensors.","This is related to pack cycling. Will have to revise SL (by 30 Sept 2020) and the FIM (31 Oct 2020).
+
+A new SDS, SL, FON and FIM is being done (as of 9/24/20). Do not replace PIPS, PIFS or PDPS for cycling. Reset is there is still cycling go to the FIM.","Per SL-21-018 (to be revised as of 9/24/20)
+
+This is related to pack cycling. Will have to revise SL procedure (by 30 Sept 2020) and the FIM (31 Oct 2020). (Input from specialist Sep/2020)
+
+Fleet wide msg in top #10 position
+Reset SL procedure is not in FIM",0
+ACSC 1,21-61,3,A100,CH A&B FAULT,"AIR,TAXI",FAILED,Fault Message,CAS MESSAGE: L ENG BLEED (AMBER),10,ACSC1-6 AND ACSC1-50,DCUs are not receiving any Arinc429 data from Left ACSC. TheController has at least oneconnector OFF or is not installedor not powered.,B1-005813,0,0,0,0,0,0,0
+ACSC 1,21-61,4,A100,CH A FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: L PACK FAULT (WHITE),10,"[1 OF NOT DCU1-1, NOT DCU2-1] AND [1 OF ACSC1-6,ACSC1-1, ACSC1-2, ACSC1-3, ACSC1-4]",Channel A of the controller isinoperative or DCUs are notreceiving ACSC1A Arinc 429 bus.,B1-005814,0,0,0,0,0,0,0
+ACSC 1,21-61,5,A100,CH B FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: L PACK FAULT (WHITE),10,"[1 OF NOT DCU1-2, NOT DCU2-2] AND [1 OF ACSC1-50,ACSC1-45, ACSC1-46, ACSC1-47, ACSC1-48]",Channel B of the controller isinoperative or DCUs are notreceiving ACSC1B Arinc 429 bus.,B1-005815,0,0,0,0,0,0,0
+ACSC 1,21-61,6,A100,VALVE DRIVER BOARD FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: (WILL DEPEND ON THE DRIVER FAILURE),10,ACSC1-39 AND ACSC1-83,"One valve driver of the ACSC1power board is inoperative. Thiscan be the driver of one of thefollowing left hand side valves:LHI PRESS VLV, L PRESS REG SOV,BLEED ISOL RLY, FLOW CTRL VLV1,TEMP CTRL VLV1, HOT AIR SOV1,CARGO HTR RLY.",B1-005816,0,0,0,0,0,0,0
+ACSC 1,21-61,7,A100,L FADEC P6 OUT OF RANGE,"AIR,TAXI",LRU OK / INFO,Fault Message,CAS MESSAGE: L ENG BLEED (AMBER),10,ACSC1-34 AND ACSC1-78,The synthesized P6 pressurecomputed by the L FADEC is out ofrange or is set at invalid data.,B1-005817,0,0,0,0,0,0,0
+ACSC 1,21-61,8,A100,NO ACSC-2A BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,CAS MESSAGE: L PACK FAULT (WHITE),10,ACSC1-7 AND ACSC1-51,No data is received on the Arinc429 bus input from ACSC2 Channel A.,B1-005818,0,0,0,0,0,0,0
+ACSC 1,21-61,9,A100,NO ACSC-2B BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,CAS MESSAGE: L PACK FAULT (WHITE),10,ACSC1-8 AND ACSC1-52,No data is received on the Arinc429 bus input from ACSC2 Channel B.,B1-005819,0,0,0,0,0,0,0
+ACSC 1,21-61,10,A100,NO CH A/B XTALK BUS,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: L PACK FAULT (WHITE),10,ACSC1-55 OR ACSC1-11,No data is received on the RS422bus input from the oppositeChannel A or Channel B.,B1-005820,0,0,0,0,0,0,0
+ACSC 1,21-61,11,A100,NO LA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC1-9 AND ACSC1-53 AND NOT IC1A-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the LA-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005821,0,0,0,0,0,0,0
+ACSC 1,21-61,12,A100,NO LB-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC1-13 AND NOT IC1B-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the LB-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005822,0,0,3,"Follow FIM if PIREP.
+1. Follow FIM TASK 21−61−04−810−811:
+    a. Defective wiring interface.
+FIM Note: Bombardier strongly recommends to swap ASCSs before replacing the LRUs. By swapping LRUs, you will verify the integrity of the ASCSs. Go to Fault Confirmation.",The intent of the FIM task is to verify if the issue is with the ACSC or the wiring.,"MDT Logic: ACSC1 L350b19 only Ch. A set and No IOC-1B data missing to MDC. 
+b16 =  NO LB-IOC-6 BUS INPUT 
+From 6/1/19 to 3/1/20 posted 1968 msgs on 347 A/C
+(1439 in AIR + 529 on TAXI)
+Follow the FIM if PIREP. The operator has some choice as to when he sends the ACSC to Liebherr because it is a service message.",0
+ACSC 1,21-61,13,A100,NO RA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC1-10 AND ACSC1-54 AND NOT IC2A-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the RA-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005823,0,0,3,"Follow FIM if PIREP.
+1. Follow FIM TASK 21−61−04−810−812:
+    a. Defective wiring interface.
+FIM Note: Bombardier strongly recommends to swap ASCSs before replacing the LRUs. By swapping LRUs, you will verify the integrity of the ASCSs. Go to Fault Confirmation.",The intent of the FIM task is to verify if the issue is with the ACSC or the wiring.,"MDT Logic: ACSC1 L350b16 both Ch. A & B set and No IOC-2A data missing to MDC. 
+b16 =  NO R-IOC-6 BUS INPUT 
+Follow the FIM if PIREP. The operator has some choice as to when he sends the ACSC to Liebherr because it is a service message.",0
+ACSC 1,21-61,14,A100,NO RB-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC1-57 AND NOT IC2B-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the RB-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005824,0,0,0,0,0,0,0
+ACSC 1,21-61,15,A100,INVALID CONFIG STRAPPING,"AIR,TAXI",FAILED/WIRING,Service Message,,10,ACSC1-5 OR ACSC1-49,Read pin programming are notconsistent with data received fromother channels.,B1-005825,0,0,0,0,0,0,0
+ACSC 1,21-61,16,A100,ISOL DRIVER FAULT,"AIR,TAXI",FAILED,Service Message,,10,ACSC1-43 AND ACSC1-87,Some component failure has beendetected. This failure does notcompletely prevent the ACSC1 tooperate the systems.,B1-005826,0,0,0,0,0,0,0
+ACSC 1,21-61,17,A100,INTERNAL FAULT,"AIR,TAXI",FAILED,Service Message,,10,"[1 OF ACSC1-12, ACSC1-56, ACSC1-7, ACSC1-51, ACSC1-8,ACSC1-52]",Some component failure has beendetected. This failure does notcompletely prevent the ACSC1 tooperate the systems.,B1-005827,0,0,0,0,0,0,0
+ACSC 1,21-61,18,A100,INVALID A/C CONFIG,"AIR,TAXI",FAILED/WIRING,Service Message,,10,ACSC1-77 OR ACSC1-33,Read Aircraft configuration. Pinprogramming data are notconsistent with data received fromother controller.,B1-046208,0,0,0,0,0,0,0
+ACSC 2,21-61,1,A101,"NO ACSC2A,2B BUS TO DCU","AIR,TAXI",OFF/NO OUTPUT,Fault Message,CAS MESSAGE: R ENG BLEED (AMBER),5,"ACSC2-52 AND ACSC2-53 AND ACSC2-1 AND ACSC2-2 AND[2 OF DCU1-12, DCU1-13, DCU2-12, DCU2-13]",DCUs are not receiving any Arinc429 data from the right ACSC. TheController has at least oneconnector OFF or is not installedor not powered.,B1-005828,0,0,0,0,0,0,0
+ACSC 2,21-61,2,A101,CH A&B FAULT,"AIR,TAXI",FAILED,Fault Message,CAS MESSAGE: L ENG BLEED (AMBER),10,ACSC2-6 AND ACSC2-57,DCUs are not receiving any Arinc429 data from the right ACSC. TheController has at least oneconnector OFF or is not installedor not powered.,B1-005829,0,0,0,0,0,0,0
+ACSC 2,21-61,3,A101,CH B FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: R PACK FAULT (WHITE),10,"[1 OF ACSC2-57, ACSC2-52, ACSC2-53, ACSC2-54, ACSC2-55]",Channel B of the controller isinoperative.,B1-005830,0,0,0,0,0,0,0
+ACSC 2,21-61,4,A101,CH A FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: R PACK FAULT (WHITE),10,"[1 OF ACSC2-6, ACSC2-1, ACSC2-2, ACSC2-3, ACSC2-4]",Channel A of the controller isinoperative.,B1-005831,0,0,0,0,0,0,0
+ACSC 2,21-61,5,A101,VALVE DRIVER BOARD FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: (WILL DEPEND ON THE VALVE FAILURE),10,ACSC2-39 AND ACSC2-90,"One valve driver of the ACSC2power board is inoperative. Thiscan be the driver of one of thefollowing right hand side valves:R HI PRESS VLV, R PRESS REG SOV,BLEED ISOL RLY, FLOW CTRL VLV2,TEMP CTRL VLV2, HOT AIR SOV2,CARGO HTR RLY.",B1-005832,0,0,0,0,0,0,0
+ACSC 2,21-61,6,A101,R FADEC P6 OUT OF RANGE,"AIR,TAXI",LRU OK / INFO,Fault Message,CAS MESSAGE: L ENG BLEED (AMBER),10,ACSC2-34 AND ACSC2-85,The synthesized P6 pressurecomputed by the R FADEC is notreceived on the Arinc 429 or isset at invalid data.,B1-005833,0,0,0,0,0,0,0
+ACSC 2,21-61,7,A101,NO ACSC-1A BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,CAS MESSAGE: R PACK FAULT (WHITE),10,ACSC2-7 AND ACSC2-58,No data is received on the Arinc429 bus input from the oppositeACSC1 Channel A.,B1-005834,0,0,0,0,0,0,0
+ACSC 2,21-61,8,A101,NO ACSC-1B BUS INPUT,"AIR,TAXI",LRU OK / INFO,Fault Message,CAS MESSAGE: R PACK FAULT (WHITE),10,ACSC2-8 AND ACSC2-59,No data is received on the Arinc429 bus input from the oppositeACSC1 Channel B.,B1-005835,0,0,0,0,0,0,0
+ACSC 2,21-61,9,A101,NO CH A/B XTALK BUS,"AIR,TAXI",FAILED/WIRING,Fault Message,CAS MESSAGE: R PACK FAULT (WHITE),10,ACSC2-62 OR ACSC2-11,No data is received on the RS422bus input from the oppositeChannel A or Channel B.,B1-005836,0,0,0,0,0,0,0
+ACSC 2,21-61,10,A101,NO LA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC2-9 AND ACSC2-60 AND NOT IC1A-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the LA-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005837,0,0,0,0,0,0,0
+ACSC 2,21-61,11,A101,NO LB-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC2-13 AND NOT IC1B-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the LB-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005838,0,0,0,0,0,0,0
+ACSC 2,21-61,12,A101,NO RA-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC1-10 AND ACSC2-61 AND NOT IC2A-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the RA-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005839,0,0,0,0,0,0,0
+ACSC 2,21-61,13,A101,NO RB-IOC-6 BUS INPUT,"AIR,TAXI",LRU OK / INFO,Service Message,,15,ACSC2-64 AND NOT IC2B-1,Expected ARINC 429 data is eithermissing or no data is received oninput from the RB-IOC-6 bus. Theproblem may be either data missingon the bus or the bus itself(wiring).,B1-005840,0,0,0,0,0,0,0
+ACSC 2,21-61,14,A101,INVALID CONFIG STRAPPING,"AIR,TAXI",FAILED/WIRING,Service Message,,10,ACSC2-5 OR ACSC2-56,Read pin programming are notconsistent with data received fromother channels.,B1-005841,0,0,0,0,0,0,0
+ACSC 2,21-61,15,A101,ISOL DRIVER FAULT,"AIR,TAXI",FAILED,Service Message,,10,ACSC2-44 AND ACSC2-95,Some component failure has beendetected. This failure does notcompletely prevent the ACSC2 tooperate the systems.,B1-005842,0,0,0,0,0,0,0
+ACSC 2,21-61,16,A101,INTERNAL FAULT,"AIR,TAXI",FAILED,Service Message,,10,"[1 OF ACSC2-12, ACSC2-63, ACSC2-7, ACSC2-58, ACSC2-8,ACSC2-59]",Some component failure has beendetected. This failure does notcompletely prevent the ACSC2 tooperate the systems.,B1-005843,0,0,0,0,0,0,0
+ACSC 2,21-61,17,A101,INTERNAL FAULT,"AIR,TAXI",FAILED/WIRING,Fault Message,,3,(ACSC2-35 AND NOT ACSC2-86) OR (ACSC2-36 ANDNOT ACSC2-87) OR (ACSC2-37 AND NOT ACSC2-88) OR (NOT ACSC2-35 AND ACSC2-86) OR (NOT ACSC2-36 ANDACSC2-87) OR (NOT ACSC2-37 AND ACSC2-88),Internal Fault,B1-005844,0,0,0,0,0,0,0
+ACSC 2,21-61,18,A101,INVALID A/C CONFIG,"AIR,TAXI",FAILED/WIRING,Service Message,,10,ACSC2-33 OR ACSC2-84,Read Aircraft configuration. Pinprogramming data are notconsistent with data received fromother controller.,B1-046209,0,0,0,0,0,0,0
