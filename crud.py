@@ -28,7 +28,15 @@ def insertData(file):
     df = to_df(file)
     df.columns = df.columns.str.replace(' ', '_')
     df.columns = df.columns.str.replace('#', '')
+    print("DF BEFORE : ")
     print(df)
+
+    df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True)
+    if df.duplicated():
+        df.loc()
+    print("DF AFTER : ")
+    print(df)
+
     # Connect to SQL Server
     conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
                               user=db_username, password=db_password)
@@ -73,17 +81,7 @@ def insertData(file):
     for index,row in df.iterrows():
         print(index)
         cursor.execute('''
-
-
-    IF NOT EXISTS (SELECT * FROM dbo.Airline_MDC_Data_CSV_UPLOAD WHERE Aircraft = row.Aircraft)
-    INSERT INTO dbo.Employee(Col1, ..., ColN)
-    VALUES(Val1, .., ValN)
-    ELSE
-    UPDATE dbo.Employee
-    SET Col1 = Val1, Col2 = Val2, ...., ColN = ValN
-    WHERE ID = @SomeID
-
-        INSERT INTO [dbo].[Airline_MDC_Data_CSV_UPLOAD]           
+            INSERT INTO [dbo].[Airline_MDC_Data_CSV_UPLOAD]
            ([Aircraft]
            ,[Tail]
            ,[Flight_Leg_No]
@@ -105,33 +103,33 @@ def insertData(file):
            ,[ID]
            ,[Flight]
            ,[airline_id]
-           ,[aircraftno]) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                    ''',
-                        row.Aircraft,
-                        row.Tail,
-                        row.Flight_Leg_No,
-                        row.ATA_Main,
-                        row.ATA_Sub,
-                        row.ATA,
-                        row.ATA_Description,
-                        row.LRU,
-                        row.DateAndTime,
-                        row.MDC_Message,
-                        row.Status,
-                        row.Flight_Phase,
-                        row.Type,
-                        row.Intermittent,
-                        row.Equation_ID,
-                        row.Source,
-                        row.Diagnostic_Data,
-                        row.Data_Used_to_Determine_Msg,
-                        row.ID,
-                        row.Flight,
-                        '101',
-                        row.Aircraft.replace('AC','')
-                    )
-        conn.commit()
-    return {"message":"Successfully inserted into Airline_MDC_Data"}
+           ,[aircraftno]) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)           
+        ''',
+            row.Aircraft,
+            row.Tail,
+            row.Flight_Leg_No,
+            row.ATA_Main,
+            row.ATA_Sub,
+            row.ATA,
+            row.ATA_Description,
+            row.LRU,
+            row.DateAndTime,
+            row.MDC_Message,
+            row.Status,
+            row.Flight_Phase,
+            row.Type,
+            row.Intermittent,
+            row.Equation_ID,
+            row.Source,
+            row.Diagnostic_Data,
+            row.Data_Used_to_Determine_Msg,
+            row.ID,
+            row.Flight,
+            '101',
+            row.Aircraft.replace('AC','')
+        )
+    conn.commit()
+    return {"message":"Successfully inserted into Airline_MDC_Data_CSV"}
 
 
 def insertData_MDCMessageInputs(file):
