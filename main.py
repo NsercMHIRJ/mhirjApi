@@ -3231,4 +3231,9 @@ async def create_upload_file1(file: UploadFile = File(...)):
 async def create_upload_file2(file: UploadFile = File(...)):
     result = insertData_TopMessageSheet(file)
     return {"result": result}   
-
+      
+# @app.post("/api/update_mdc_message_input/{column_name}/{data}")
+# async def get_CorelationData(fromDate: str , toDate: str, equation_id:str, ata:str):
+#     corelation_df = connect_database_for_corelation(fromDate, toDate, equation_id, ata)
+#     corelation_df_json = corelation_df.to_json(orient='records')
+#     return corelation_df_json

@@ -30,105 +30,146 @@ def insertData(file):
     df.columns = df.columns.str.replace('#', '')
     print("DF BEFORE : ")
     print(df)
-
-    df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True)
-    if df.duplicated():
-        df.loc()
-    print("DF AFTER : ")
-    print(df)
-
-    # Connect to SQL Server
+    
     conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
                               user=db_username, password=db_password)
     cursor = conn.cursor()
+    sql = "SELECT Aircraft, Tail,Flight_Leg_No,ATA_Main,ATA_Sub,ATA,ATA_Description,LRU,DateAndTime,MDC_Message,Status,Flight_Phase,Type,Intermittent,Equation_ID,Source,Diagnostic_Data,Data_Used_to_Determine_Msg,ID,Flight FROM [dbo].[Airline_MDC_Data_CSV_UPLOAD]"
+
+    try:
+        airline_mdc_all_df = pd.read_sql(sql, conn)
+    except pyodbc.Error as err:
+        print("Error message:- " + str(err))
+    df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True)
+
     
+    print("DF COLUMNS:")
+    print(df)
+
+
+    print("DF AIRLINE ALL:")
+    print(airline_mdc_all_df)
+    print("DF DIFF AFTER concat : ")
+    
+    #merged_df = airline_mdc_all_df.concat(df, indicator=True, how='outer')
+    #changed_rows_df = merged_df[merged_df['_merge'] == 'right_only']
+    #changed_rows_df.drop('_merge', axis=1)
+    temp_df = pd.concat([airline_mdc_all_df, df])
+    #temp_df = temp_df.reset_index(drop=True)
+    #df_gpby = temp_df.groupby(list(temp_df.columns))
+
+    #idx = [x[0] for x in df_gpby.groups.values() if len(x) != 1]
+    #temp_df.reindex(idx)
+    print(temp_df)
+    print("After duplicate :")
+    #new_df = temp_df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True,keep=False,indicator=True)
+    airline_mdc_all_df.sort_index(inplace=True)
+    #df.reset_index(drop=True) 
+    df.sort_index(inplace=True)
+    
+    #new_df = airline_mdc_all_df.compare(df)
+    #new_df = airline_mdc_all_df[ ~airline_mdc_all_df.isin(df)].dropna()
+
+    #df_diff = airline_mdc_all_df.compare(df)
+
+    #df_diff = pd.concat([df,airline_mdc_all_df])
+    #print(new_df)
+    #df_diff = df_diff.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True,keep=False)
+    #print("After duplicate")
+    #print(df_diff)
+
+    final_df = (airline_mdc_all_df != df).stack()
+    print("FINAL")
+    print(final_df)
+
+
 
     # Create Table
     ##### CREATE TABLE QUERY for Airline_MDC_Data.csv
-    cursor.execute('''
-    IF OBJECT_ID('dbo.Airline_MDC_Data_CSV_UPLOAD', 'U') IS NULL
+    # cursor.execute('''
+    # IF OBJECT_ID('dbo.Airline_MDC_Data_CSV_UPLOAD', 'U') IS NULL
     
-    CREATE TABLE [dbo].[Airline_MDC_Data_CSV_UPLOAD](
-	[Aircraft] [varchar](255) NOT NULL,
-	[Tail] [nvarchar](50) NOT NULL,
-	[Flight_Leg_No] [int] NOT NULL,
-	[ATA_Main] [int] NOT NULL,
-	[ATA_Sub] [nvarchar](50) NOT NULL,
-	[ATA] [nvarchar](50) NOT NULL,
-	[ATA_Description] [nvarchar](100) NOT NULL,
-	[LRU] [nvarchar](50) NOT NULL,
-	[DateAndTime] [datetime2](7) NOT NULL,
-	[MDC_Message] [nvarchar](50) NOT NULL,
-	[Status] [nvarchar](50) NOT NULL,
-	[Flight_Phase] [nvarchar](50) NOT NULL,
-	[Type] [nvarchar](50) NOT NULL,
-	[Intermittent] [nvarchar](50) NULL,
-	[Equation_ID] [varchar](255) NOT NULL,
-	[Source] [nvarchar](50) NOT NULL,
-	[Diagnostic_Data] [text] NULL,
-	[Data_Used_to_Determine_Msg] [nvarchar](250) NULL,
-	[ID] [nvarchar](50) NOT NULL,
-	[Flight] [nvarchar](50) NULL,
-	[airline_id] [int] NOT NULL,
-	[aircraftno] [varchar](255) NULL,
-	CONSTRAINT airlineMDC_pk PRIMARY KEY (Aircraft,Flight_Leg_No,DateAndTime,Flight_Phase,Equation_ID) 
-    )
-    ''')
-    conn.commit()
+    # CREATE TABLE [dbo].[Airline_MDC_Data_CSV_UPLOAD](
+	# [Aircraft] [varchar](255) NOT NULL,
+	# [Tail] [nvarchar](50) NOT NULL,
+	# [Flight_Leg_No] [int] NOT NULL,
+	# [ATA_Main] [int] NOT NULL,
+	# [ATA_Sub] [nvarchar](50) NOT NULL,
+	# [ATA] [nvarchar](50) NOT NULL,
+	# [ATA_Description] [nvarchar](100) NOT NULL,
+	# [LRU] [nvarchar](50) NOT NULL,
+	# [DateAndTime] [datetime2](7) NOT NULL,
+	# [MDC_Message] [nvarchar](50) NOT NULL,
+	# [Status] [nvarchar](50) NOT NULL,
+	# [Flight_Phase] [nvarchar](50) NOT NULL,
+	# [Type] [nvarchar](50) NOT NULL,
+	# [Intermittent] [nvarchar](50) NULL,
+	# [Equation_ID] [varchar](255) NOT NULL,
+	# [Source] [nvarchar](50) NOT NULL,
+	# [Diagnostic_Data] [text] NULL,
+	# [Data_Used_to_Determine_Msg] [nvarchar](250) NULL,
+	# [ID] [nvarchar](50) NOT NULL,
+	# [Flight] [nvarchar](50) NULL,
+	# [airline_id] [int] NOT NULL,
+	# [aircraftno] [varchar](255) NULL,
+	# CONSTRAINT airlineMDC_pk PRIMARY KEY (Aircraft,Flight_Leg_No,DateAndTime,Flight_Phase,Equation_ID) 
+    # )
+    # ''')
+    # conn.commit()
 
     
-    # Insert DataFrame to Table
-    for index,row in df.iterrows():
-        print(index)
-        cursor.execute('''
-            INSERT INTO [dbo].[Airline_MDC_Data_CSV_UPLOAD]
-           ([Aircraft]
-           ,[Tail]
-           ,[Flight_Leg_No]
-           ,[ATA_Main]
-           ,[ATA_Sub]
-           ,[ATA]
-           ,[ATA_Description]
-           ,[LRU]
-           ,[DateAndTime]
-           ,[MDC_Message]
-           ,[Status]
-           ,[Flight_Phase]
-           ,[Type]
-           ,[Intermittent]
-           ,[Equation_ID]
-           ,[Source]
-           ,[Diagnostic_Data]
-           ,[Data_Used_to_Determine_Msg]
-           ,[ID]
-           ,[Flight]
-           ,[airline_id]
-           ,[aircraftno]) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)           
-        ''',
-            row.Aircraft,
-            row.Tail,
-            row.Flight_Leg_No,
-            row.ATA_Main,
-            row.ATA_Sub,
-            row.ATA,
-            row.ATA_Description,
-            row.LRU,
-            row.DateAndTime,
-            row.MDC_Message,
-            row.Status,
-            row.Flight_Phase,
-            row.Type,
-            row.Intermittent,
-            row.Equation_ID,
-            row.Source,
-            row.Diagnostic_Data,
-            row.Data_Used_to_Determine_Msg,
-            row.ID,
-            row.Flight,
-            '101',
-            row.Aircraft.replace('AC','')
-        )
-    conn.commit()
+    # # Insert DataFrame to Table
+    # for index,row in df.iterrows():
+    #     print(index)
+    #     cursor.execute('''
+    #         INSERT INTO [dbo].[Airline_MDC_Data_CSV_UPLOAD]
+    #        ([Aircraft]
+    #        ,[Tail]
+    #        ,[Flight_Leg_No]
+    #        ,[ATA_Main]
+    #        ,[ATA_Sub]
+    #        ,[ATA]
+    #        ,[ATA_Description]
+    #        ,[LRU]
+    #        ,[DateAndTime]
+    #        ,[MDC_Message]
+    #        ,[Status]
+    #        ,[Flight_Phase]
+    #        ,[Type]
+    #        ,[Intermittent]
+    #        ,[Equation_ID]
+    #        ,[Source]
+    #        ,[Diagnostic_Data]
+    #        ,[Data_Used_to_Determine_Msg]
+    #        ,[ID]
+    #        ,[Flight]
+    #        ,[airline_id]
+    #        ,[aircraftno]) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)           
+    #     ''',
+    #         row.Aircraft,
+    #         row.Tail,
+    #         row.Flight_Leg_No,
+    #         row.ATA_Main,
+    #         row.ATA_Sub,
+    #         row.ATA,
+    #         row.ATA_Description,
+    #         row.LRU,
+    #         row.DateAndTime,
+    #         row.MDC_Message,
+    #         row.Status,
+    #         row.Flight_Phase,
+    #         row.Type,
+    #         row.Intermittent,
+    #         row.Equation_ID,
+    #         row.Source,
+    #         row.Diagnostic_Data,
+    #         row.Data_Used_to_Determine_Msg,
+    #         row.ID,
+    #         row.Flight,
+    #         '101',
+    #         row.Aircraft.replace('AC','')
+    #     )
+    # conn.commit()
     return {"message":"Successfully inserted into Airline_MDC_Data_CSV"}
 
 
@@ -282,3 +323,25 @@ def insertData_TopMessageSheet(file):
         )
         conn.commit()
     return {"message":"Successfully inserted into TopMessageSheet"}
+
+# def connect_database_for_corelation_pid(p_id):
+#     sql = """SELECT [mdc_ID], [EQ_ID], [aircraftno], [ATA_Description], [LRU], [DateAndTime], [MDC_Date], 
+# 	[MDC_MESSAGE], [EQ_DESCRIPTION], [CAS], [LRU_CODE], [LRU_NAME], [FAULT_LOGGED], [MDC_ATA], 
+# 	[mdc_ata_main], [mdc_ata_sub], [Status], [mdc_type]
+#     FROM [dbo].[sample_corelation]
+#     WHERE p_id = (%s)
+#     ORDER BY MDC_Date""" % (p_id)
+
+#     print(sql)
+
+#     try:
+#         conn = pyodbc.connect(driver=db_driver, host=hostname,
+#                               database=db_name,
+#                               user=db_username, password=db_password)
+#         corelation_df = pd.read_sql(sql, conn)
+#         print('query successful')
+#         conn.close()
+#         return corelation_df
+#     except pyodbc.Error as err:
+#         print("Couldn't connect to Server")
+#         print("Error message:- " + str(err))
