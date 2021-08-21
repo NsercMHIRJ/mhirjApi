@@ -6,6 +6,8 @@ import urllib
 import pandas as pd
 import csv
 import codecs
+import numpy as np
+
 
 # Initialiaze Database Properties
 hostname = os.environ.get('hostname', 'mhrijhumber.database.windows.net')
@@ -34,7 +36,8 @@ def insertData(file):
     conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
                               user=db_username, password=db_password)
     cursor = conn.cursor()
-    sql = "SELECT Aircraft, Tail,Flight_Leg_No,ATA_Main,ATA_Sub,ATA,ATA_Description,LRU,DateAndTime,MDC_Message,Status,Flight_Phase,Type,Intermittent,Equation_ID,Source,Diagnostic_Data,Data_Used_to_Determine_Msg,ID,Flight FROM [dbo].[Airline_MDC_Data_CSV_UPLOAD]"
+    sql = "SELECT Aircraft,Tail,Flight_Leg_No,ATA_Main,ATA_Sub,ATA,ATA_Description,LRU,DateAndTime,MDC_Message,Status,Flight_Phase,Type,Intermittent,Equation_ID,Source,Diagnostic_Data,Data_Used_to_Determine_Msg,ID,Flight FROM [dbo].[Airline_MDC_Data_CSV_UPLOAD]"
+    #sql = "SELECT Aircraft, Tail,Flight_Leg_No,ATA_Main,ATA_Sub,ATA,ATA_Description,LRU,DateAndTime,MDC_Message,Status,Flight_Phase,Type,Intermittent,Equation_ID,Source,Diagnostic_Data,Data_Used_to_Determine_Msg,ID,Flight FROM [dbo].[Airline_MDC_Data_CSV_UPLOAD]   WHERE CONVERT(VARCHAR, [DateAndTime], 120) BETWEEN  '2020-12-13 23:56:00%' AND '2020-12-13 23:57:00%' "
 
     try:
         airline_mdc_all_df = pd.read_sql(sql, conn)
@@ -43,29 +46,39 @@ def insertData(file):
     df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True)
 
     
-    print("DF COLUMNS:")
-    print(df)
+    print("DF DATA :")
+    print(df.columns)
 
 
     print("DF AIRLINE ALL:")
-    print(airline_mdc_all_df)
+    print(airline_mdc_all_df.columns)
     print("DF DIFF AFTER concat : ")
+   # df.reset_index(inplace=True)
+   # airline_mdc_all_df.reset_index(inplace=True)
+   # df.sort_index(drop=True)
+   # airline_mdc_all_df.sort_index(drop=True)
+    
+    check = df['Aircraft'].isin(airline_mdc_all_df['Aircraft'])
+
+    #df['check'] = np.where(df['Tail'] == airline_mdc_all_df['Tail']) 
+    print("check is ",check)
+
     
     #merged_df = airline_mdc_all_df.concat(df, indicator=True, how='outer')
     #changed_rows_df = merged_df[merged_df['_merge'] == 'right_only']
     #changed_rows_df.drop('_merge', axis=1)
-    temp_df = pd.concat([airline_mdc_all_df, df])
+    #temp_df = pd.concat([airline_mdc_all_df, df])
     #temp_df = temp_df.reset_index(drop=True)
     #df_gpby = temp_df.groupby(list(temp_df.columns))
 
     #idx = [x[0] for x in df_gpby.groups.values() if len(x) != 1]
     #temp_df.reindex(idx)
-    print(temp_df)
-    print("After duplicate :")
+    #print(temp_df)
+    #print("After duplicate :")
     #new_df = temp_df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True,keep=False,indicator=True)
-    airline_mdc_all_df.sort_index(inplace=True)
+    #airline_mdc_all_df.sort_index(inplace=True)
     #df.reset_index(drop=True) 
-    df.sort_index(inplace=True)
+    #df.sort_index(inplace=True)
     
     #new_df = airline_mdc_all_df.compare(df)
     #new_df = airline_mdc_all_df[ ~airline_mdc_all_df.isin(df)].dropna()
@@ -78,9 +91,9 @@ def insertData(file):
     #print("After duplicate")
     #print(df_diff)
 
-    final_df = (airline_mdc_all_df != df).stack()
-    print("FINAL")
-    print(final_df)
+    #final_df = (airline_mdc_all_df != df).stack()
+    #print("FINAL")
+    #print(final_df)
 
 
 
