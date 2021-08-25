@@ -45,11 +45,11 @@ def insertData(file):
         print("Error message:- " + str(err))
     df.drop_duplicates(subset=['Aircraft','Flight_Leg_No','DateAndTime','Flight_Phase','Equation_ID'],inplace=True)
 
-    
+    #current file upload data
     print("DF DATA :")
     print(df.columns)
 
-
+    #past two weeks df
     print("DF AIRLINE ALL:")
     print(airline_mdc_all_df.columns)
     print("DF DIFF AFTER concat : ")
@@ -58,11 +58,12 @@ def insertData(file):
    # df.sort_index(drop=True)
    # airline_mdc_all_df.sort_index(drop=True)
     
-    check = df['Aircraft'].isin(airline_mdc_all_df['Aircraft'])
+    #check = df['Aircraft'].isin(airline_mdc_all_df['Aircraft'])
 
-    #df['check'] = np.where(df['Tail'] == airline_mdc_all_df['Tail']) 
-    print("check is ",check)
 
+    #df['check'] = np.where(df['Aircraft'] == airline_mdc_all_df['Aircraft']) 
+    #print("check is ",check)
+    
     
     #merged_df = airline_mdc_all_df.concat(df, indicator=True, how='outer')
     #changed_rows_df = merged_df[merged_df['_merge'] == 'right_only']
