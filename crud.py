@@ -101,12 +101,13 @@ def insertData(file):
        try:
         row_intermittent = int(row['Intermittent'])
        except:
-          row_intermittent = 0 
-         
+          row_intermittent = ''
       
        
        if res_intermittent == '':  
            Max_Intermittent = row_intermittent
+       elif row_intermittent  == '':  
+           Max_Intermittent = res_intermittent   
        else:
            Max_Intermittent = max(int(res_intermittent), row_intermittent)
            print(Max_Intermittent)
