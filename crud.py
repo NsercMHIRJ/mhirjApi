@@ -73,7 +73,7 @@ def insertData(file):
    # Insert DataFrame to Table
    for index,row in df.iterrows():
      
-       sql = "SELECT [Intermittent] as ip from [dbo].[Airline_MDC_Data_CSV_UPLOAD] WHERE [Aircraft]= '%s' AND [Equation_ID]='%s' AND [DateAndTime]='%s' AND [Flight_Leg_No]='%s' AND [Flight_Phase]='%s'"  % (
+       sql = "SELECT [Intermittent] as ip from [dbo].[Airline_MDC_Data] WHERE [Aircraft]= '%s' AND [Equation_ID]='%s' AND [DateAndTime]='%s' AND [Flight_Leg_No]='%s' AND [Flight_Phase]='%s'"  % (
                        row['Aircraft'],
                        row['Equation_ID'],
                        row['DateAndTime'],
@@ -111,7 +111,7 @@ def insertData(file):
        else:
            Max_Intermittent = max(int(res_intermittent), row_intermittent)
            print(Max_Intermittent)
-       res = cursor.execute("UPDATE [dbo].[Airline_MDC_Data_CSV_UPLOAD] SET [Intermittent]= ?  WHERE [Aircraft]=? AND [Equation_ID]=? AND [DateAndTime]=? AND [Flight_Leg_No]=? AND [Flight_Phase]=? ",
+       res = cursor.execute("UPDATE [dbo].[Airline_MDC_Data] SET [Intermittent]= ?  WHERE [Aircraft]=? AND [Equation_ID]=? AND [DateAndTime]=? AND [Flight_Leg_No]=? AND [Flight_Phase]=? ",
                        str(Max_Intermittent),
                        row['Aircraft'],
                        row['Equation_ID'],
@@ -121,7 +121,7 @@ def insertData(file):
        )
        if res.rowcount == 0:
         cursor.execute('''
-           INSERT INTO [dbo].[Airline_MDC_Data_CSV_UPLOAD]
+           INSERT INTO [dbo].[Airline_MDC_Data]
            ([Aircraft]
           ,[Tail]
           ,[Flight_Leg_No]
@@ -169,7 +169,7 @@ def insertData(file):
            row.Aircraft.replace('AC','')
        )
    conn.commit()
-   return {"message":"Successfully inserted into Airline_MDC_Data_CSV"}
+   return {"message":"Successfully inserted into Airline_MDC_Data"}
 
 
 
