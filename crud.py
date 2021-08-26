@@ -170,6 +170,160 @@ def insertData(file):
        )
    conn.commit()
    return {"message":"Successfully inserted into Airline_MDC_Data_CSV"}
+
+
+
+def insertData_MDCMessageInputs(file):
+    df = to_df(file)
+    print(df.columns)
+    print("MDCMESS::\n",df)
+    df.columns = df.columns.str.replace(' ', '_')
+    df.columns = df.columns.str.replace('#', '')
+    df.columns = df.columns.str.replace('-', '_')
+    # Connect to SQL Server
+    print("MDC INPUT ::: ",df.columns)
+    conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+    cursor = conn.cursor()
+
+    ##### CREATE TABLE QUERY for MDCMessageInputs.csv
+    cursor.execute('''
+    IF OBJECT_ID('dbo.MDCMessagesInputs_CSV_UPLOAD', 'U') IS NULL
+    CREATE TABLE [dbo].[MDCMessagesInputs_CSV_UPLOAD](
+	[LRU] [varchar](max) NULL,
+	[ATA] [varchar](max) NULL,
+	[Message] [varchar](max) NULL,
+	[Comp_ID] [varchar](max) NULL,
+	[Message1] [varchar](max) NULL,
+	[Fault_Logged] [varchar](max) NULL,
+	[Status] [varchar](max) NULL,
+	[Message_Type] [varchar](max) NULL,
+	[EICAS] [varchar](4000) NULL,
+	[Timer] [nvarchar](max) NULL,
+	[Logic] [nvarchar](max) NULL,
+	[Equation_Description] [varchar](4000) NULL,
+	[Equation_ID] [varchar](255) NULL,
+	[Occurance_Flag] [nvarchar](max) NULL,
+	[Days_Count] [nvarchar](max) NULL,
+	[Priority] [varchar](4000) NULL,
+	[MHIRJ_ISE_Recommended_Action] [varchar](4000) NULL,
+	[Additional_Comments] [varchar](4000) NULL,
+	[MHIRJ_ISE_inputs] [varchar](4000) NULL,
+    [MEL_or_No_Dispatch] [varchar](4000) NULL
+    )
+    ''')
+    conn.commit()
+
+    #INSERT DATAFRAME INTO TABLE
+    for index,row in df.iterrows():
+        print("DATA INPUT : ",row.LRU)
+        cursor.execute('''
+        INSERT INTO [dbo].[MDCMessagesInputs_CSV_UPLOAD](
+        [LRU],
+        [ATA],
+        [Message], 
+        [Comp_ID], 
+        [Message1], 
+        [Fault_Logged], 
+        [Status], 
+        [Message_Type],
+        [EICAS], 
+        [Timer], 
+        [Logic], 
+        [Equation_Description],
+        [Equation_ID], 
+        [Occurance_Flag], 
+        [Days_Count], 
+        [Priority], 
+        [MHIRJ_ISE_Recommended_Action],
+        [Additional_Comments], 
+        [MHIRJ_ISE_inputs],
+        [MEL_or_No_Dispatch]
+        ) 
+        VALUES 
+        (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''',
+        row.LRU,
+        row.ATA,
+        row.Message,
+        row.Comp_ID,
+        row.Message1,
+        row.Fault_Logged,
+        row.Status,
+        row.Message_Type,
+        row.EICAS,
+        row.Timer,
+        row.Logic,
+        row.Equation_Description,
+        row.Equation_ID,
+        row.Occurance_Flag,
+        row.Days_Count,
+        row.Priority,
+        row.MHIRJ_ISE_Recommended_Action,
+        row.Additional_Comments,
+        row.MHIRJ_ISE_inputs,
+        row.MEL_or_No_Dispatch
+        )
+        conn.commit()
+    return {"message":"Successfully inserted into MDCMessagesInputs"}
+
+
+def insertData_TopMessageSheet(file):
+    df = to_df(file)
+    df.columns = df.columns.str.replace(' ', '_')
+    df.columns = df.columns.str.replace('#', '')
+    df.columns = df.columns.str.replace(' / ', '_')
+    df.columns = df.columns.str.replace('-', '_')
+    print("\n-------COLUMNS",df.columns)
+    # Connect to SQL Server
+    conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+    cursor = conn.cursor()
+    print("\n\n-----------\nDATA IN TOP\n\n\n: ",df)
+    ##### CREATE TABLE QUERY for TopMessageSheet.csv
+    cursor.execute('''
+      IF OBJECT_ID('dbo.TopMessagesSheet_CSV_UPLOAD', 'U') IS NULL
+        CREATE TABLE [dbo].[TopMessagesSheet_CSV_UPLOAD](
+	[ATA] [nvarchar](max) NOT NULL,
+	[CRJ_700] [nvarchar](max) NOT NULL,
+	[CRJ_900] [nvarchar](max) NOT NULL,
+	[CRJ_1000] [nvarchar](max) NOT NULL,
+	[MDC_B1_Code] [varchar](255) NULL,
+	[LRU] [nvarchar](max) NOT NULL,
+	[Msg_type] [nvarchar](max) NOT NULL,
+	[Phase_logged] [nvarchar](max) NOT NULL,
+	[EICAS_FDE] [nvarchar](max) NULL,
+	[MDC_Msg] [nvarchar](max) NULL,
+	[FIM_Task_Reference] [varchar](4000) NULL,
+	[In_Service_BA_document] [varchar](4000) NULL,
+	[Title] [nvarchar](max) NULL,
+	[Known_nuisance] [varchar](4000) NULL,
+	[Remarks] [varchar](4000) NULL
+    )
+    ''')    
+    conn.commit()
+
+
+    # INSERT DATAFRAME INTO TABLE
+    for index,row in df.iterrows():
+        print("\n\n--index is : ",row.ATA)
+        cursor.execute('''
+        INSERT INTO [dbo].[TopMessagesSheet_CSV_UPLOAD](
+        ATA,
+        CRJ_700,
+        CRJ_900,
+        CRJ_1000,MDC_B1_Code,LRU,Msg_type,Phase_logged,EICAS_FDE,MDC_Msg,FIM_Task_Reference,
+        In_Service_BA_document,Title,Known_nuisance,Remarks) 
+        VALUES 
+        (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''',
+        row.ATA,row.CRJ_700,row.CRJ_900,row.CRJ_1000,row.MDC_B1_Code,row.LRU,row.Msg_type,row.Phase_logged,
+        row.EICAS_FDE,row.MDC_Msg,row.FIM_Task_Reference,
+        row.In_Service_BA_document,row.Title,row.Known_nuisance,row.Remarks
+        )
+        conn.commit()
+    return {"message":"Successfully inserted into TopMessageSheet"}
+
  
  
 
