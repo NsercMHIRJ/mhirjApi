@@ -137,7 +137,7 @@ def insertData_MDCMessageInputs(file):
     print(df.columns)
     print("MDCMESS::\n",df)
     df.columns = df.columns.str.replace(' ', '_')
-    df.columns = df.columns.str.replace('#', '')
+    df.columns = df.columns.str.replace('#', '_NO')
     df.columns = df.columns.str.replace('-', '_')
     # Connect to SQL Server
     print("MDC INPUT ::: ",df.columns)
@@ -151,9 +151,9 @@ def insertData_MDCMessageInputs(file):
     CREATE TABLE [dbo].[MDCMessagesInputs_CSV_UPLOAD](
 	[LRU] [varchar](max) NULL,
 	[ATA] [varchar](max) NULL,
-	[Message] [varchar](max) NULL,
+	[Message_NO] [varchar](max) NULL,
 	[Comp_ID] [varchar](max) NULL,
-	[Message1] [varchar](max) NULL,
+	[Message] [varchar](max) NULL,
 	[Fault_Logged] [varchar](max) NULL,
 	[Status] [varchar](max) NULL,
 	[Message_Type] [varchar](max) NULL,
@@ -164,7 +164,7 @@ def insertData_MDCMessageInputs(file):
 	[Equation_ID] [varchar](255) NULL,
 	[Occurance_Flag] [nvarchar](max) NULL,
 	[Days_Count] [nvarchar](max) NULL,
-	[Priority] [varchar](4000) NULL,
+	[Priority_] [varchar](4000) NULL,
 	[MHIRJ_ISE_Recommended_Action] [varchar](4000) NULL,
 	[Additional_Comments] [varchar](4000) NULL,
 	[MHIRJ_ISE_inputs] [varchar](4000) NULL,
@@ -180,9 +180,9 @@ def insertData_MDCMessageInputs(file):
         INSERT INTO [dbo].[MDCMessagesInputs_CSV_UPLOAD](
         [LRU],
         [ATA],
-        [Message], 
+        [Message_NO], 
         [Comp_ID], 
-        [Message1], 
+        [Message], 
         [Fault_Logged], 
         [Status], 
         [Message_Type],
@@ -193,7 +193,7 @@ def insertData_MDCMessageInputs(file):
         [Equation_ID], 
         [Occurance_Flag], 
         [Days_Count], 
-        [Priority], 
+        [Priority_], 
         [MHIRJ_ISE_Recommended_Action],
         [Additional_Comments], 
         [MHIRJ_ISE_inputs],
@@ -204,9 +204,9 @@ def insertData_MDCMessageInputs(file):
         ''',
         row.LRU,
         row.ATA,
-        row.Message,
+        row.Message_NO,
         row.Comp_ID,
-        row.Message1,
+        row.Message,
         row.Fault_Logged,
         row.Status,
         row.Message_Type,
@@ -217,14 +217,14 @@ def insertData_MDCMessageInputs(file):
         row.Equation_ID,
         row.Occurance_Flag,
         row.Days_Count,
-        row.Priority,
+        row.Priority_,
         row.MHIRJ_ISE_Recommended_Action,
         row.Additional_Comments,
         row.MHIRJ_ISE_inputs,
         row.MEL_or_No_Dispatch
         )
         conn.commit()
-    return {"message":"Successfully inserted into MDCMessagesInputs"}
+    return "Successfully inserted into MDCMessagesInputs"
 
 
 def insertData_TopMessageSheet(file):
