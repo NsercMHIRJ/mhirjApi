@@ -3262,7 +3262,8 @@ def create_delta_lists(prev_history, curr_history):
 def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
     '''highlights delta of two history reports'''
     # check what in the new report exists in the prev. which of tuple(AC SN, B1) exists in the true list
-    #is_color = (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list
+    is_color = (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list
+    print("--------check color----",is_color)
     #is_color = table_highlight.index.values in delta_list
     #print((table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list)
 
@@ -3270,10 +3271,10 @@ def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
     #print("table_highlight[0]: ",table_highlight[0])
     #print("index of th: ", table_highlight.index)
     #print("tuple of index: ", list(zip(table_highlight['AC SN'], table_highlight['B1-Equation'])))
-    print("index of th 2: ", table_highlight.index.values)
-    for each_tuple in table_highlight.index.values:
-        if each_tuple in delta_list:
-            is_color = True
+    # print("index of th 2: ", table_highlight.index.values)
+    # for each_tuple in table_highlight.index.values:
+    #     if each_tuple in delta_list:
+    #         is_color = True
 
     '''
     for each_tuple in delta_list:
@@ -3384,13 +3385,12 @@ table_highlight = table_highlight.assign( is_dark_red = lambda dataframe: datafr
 
 
 @app.post(
-    "/api/GenerateReport/{analysisType}/{occurences}/{legs}/{intermittent}/{consecutiveDays}/{ata}/{exclude_EqID}/{airline_operator}/{include_current_message}/{prev_fromDate}/{prev_toDate}/{curr_fromDate}/{curr_toDate}")
+    "/api/GenerateReport/{analysisType}/{occurences}/{legs}/{intermittent}/{consecutiveDays}/{ata}/{exclude_EqID}/{airline_operator}/{include_current_message}/{flag}/{prev_fromDate}/{prev_toDate}/{curr_fromDate}/{curr_toDate}")
 async def generateDeltaReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int,
-                              ata: str, exclude_EqID: str, airline_operator: str, include_current_message: int,
+                              ata: str, exclude_EqID: str, airline_operator: str, include_current_message: int,flag:int,
                               prev_fromDate: str, prev_toDate: str, curr_fromDate: str, curr_toDate: str):
     print("prev dates: ", prev_fromDate, " - ", prev_toDate)
     print("curr dates: ", curr_fromDate, " - ", curr_toDate)
-
     ## Previous dates computation
     if not (prev_fromDate is None and prev_toDate is None):
         MDCdataDF = connect_database_MDCdata(ata, exclude_EqID, airline_operator, include_current_message,
