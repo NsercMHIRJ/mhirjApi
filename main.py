@@ -3237,3 +3237,1087 @@ async def create_upload_file2(file: UploadFile = File(...)):
 #     corelation_df = connect_database_for_corelation(fromDate, toDate, equation_id, ata)
 #     corelation_df_json = corelation_df.to_json(orient='records')
 #     return corelation_df_json
+
+
+## Delta Report
+True_list = []
+False_list = []
+def create_delta_lists(prev_history, curr_history):
+    '''create True and False lists for the Delta report'''
+    # making tuples of the combos of AC SN and B1-eqn
+    comb_prev = list(zip(prev_history["AC SN"], prev_history["B1-Equation"]))
+    comb_curr = list(zip(curr_history["AC SN"], curr_history["B1-Equation"]))
+
+    # create a list for flags still on going (true_list) and new flags (false_list)
+    True_list = []
+    False_list = []
+    for i in range(len(comb_curr)):
+        if comb_curr[i] in comb_prev:
+            True_list.append(comb_curr[i])
+        elif comb_curr[i] not in comb_prev:
+            False_list.append(comb_curr[i])
+    return True_list, False_list
+
+
+def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
+    '''highlights delta of two history reports'''
+    # check what in the new report exists in the prev. which of tuple(AC SN, B1) exists in the true list
+    #is_color = (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list
+    #is_color = table_highlight.index.values in delta_list
+    #print((table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list)
+
+    #print(table_highlight.iloc[0]["AC SN"], table_highlight.iloc[0]["B1-Equation"])
+    #print("table_highlight[0]: ",table_highlight[0])
+    #print("index of th: ", table_highlight.index)
+    #print("tuple of index: ", list(zip(table_highlight['AC SN'], table_highlight['B1-Equation'])))
+    print("index of th 2: ", table_highlight.index.values)
+    for each_tuple in table_highlight.index.values:
+        if each_tuple in delta_list:
+            is_color = True
+
+    '''
+    for each_tuple in delta_list:
+        if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in each_tuple:
+            print('is_color == True for ',each_tuple)
+    '''
+
+    print("Delta_list: ", delta_list)
+    print(":: Table highlight ::")
+    print((table_highlight))
+    """
+    is_color = False
+    # if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list:
+    for each in delta_list:
+        print(each)
+        # if (table_highlight["AC SN"] in delta_list and table_highlight["B1-Equation"] in delta_list):
+        if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in each:
+            is_color = True
+        #else: is_color = False
+        print("is_col: ", is_color)
+"""
+    # already existed in prev report and is not jam
+    if delta_list == True_list and table_highlight["B1-Equation"] not in Jam_list:
+        # light orange: 'background-color: #fde9d9'
+        return [ table_highlight['is_light_orange'] == True if is_color else '' for v in table_highlight]
+    # didnt exist in prev report and is not jam
+    elif delta_list == False_list and table_highlight["B1-Equation"] not in Jam_list:
+        # dark orange: 'background-color: #fabf8f'
+        return [ table_highlight['is_dark_orange'] == True if is_color else '' for v in table_highlight]
+    # already existed in prev report and is jam
+    elif delta_list == True_list and table_highlight["B1-Equation"] in Jam_list:
+        # light red:  'background-color: #f08080'
+        return [ table_highlight['is_light_red'] == True if is_color else '' for v in table_highlight]
+    # didnt exist in prev report and is jam
+    elif delta_list == False_list and table_highlight["B1-Equation"] in Jam_list:
+        # dark red: 'background-color: #ff342e'
+        return [ table_highlight['is_dark_red'] == True if is_color else '' for v in table_highlight]
+
+
+"""
+def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
+    '''highlights delta of two history reports'''
+    # check what in the new report exists in the prev. which of tuple(AC SN, B1) exists in the true list
+    print("Delta_list: ",delta_list)
+    print((table_highlight))
+    is_color = False
+    #if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list:
+    for each in delta_list:
+        print(each)
+        #if (table_highlight["AC SN"] in delta_list and table_highlight["B1-Equation"] in delta_list):
+        if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in each:
+            is_color = True
+
+        # already existed in prev report and is not jam
+    if delta_list == True_list and table_highlight["B1-Equation"] not in Jam_list:
+        # light orange
+        # return ['background-color: #fde9d9' if is_color else '' for v in table_highlight]
+        #for v in table_highlight:
+        if is_color is True:
+            #table_highlight = table_highlight.assign(is_light_orange=True)
+            table_highlight['is_light_orange'] = True
+        else:
+            #table_highlight = table_highlight.assign(is_light_orange=False)
+            table_highlight['is_light_orange'] = False
+    # didnt exist in prev report and is not jam
+    elif delta_list == False_list and table_highlight["B1-Equation"] not in Jam_list:
+        # dark orange
+        # return ['background-color: #fabf8f' if is_color else '' for v in table_highlight]
+        #for v in table_highlight:
+        if is_color is True:
+            #table_highlight = table_highlight.assign(is_dark_orange=True)
+            table_highlight['is_dark_orange'] = True
+        else:
+            #table_highlight = table_highlight.assign(is_dark_orange=False)
+            table_highlight['is_dark_orange'] = False
+    # already existed in prev report and is jam
+    elif delta_list == True_list and table_highlight["B1-Equation"] in Jam_list:
+        # light red
+        # return ['background-color: #f08080' if is_color else '' for v in table_highlight]
+        #for v in table_highlight:
+        if is_color is True:
+            #table_highlight = table_highlight.assign(is_light_red=True)
+            table_highlight['is_light_red'] = True
+        else:
+            #table_highlight = table_highlight.assign(is_light_red=False)
+            table_highlight['is_light_red'] = False
+    # didnt exist in prev report and is jam
+    elif delta_list == False_list and table_highlight["B1-Equation"] in Jam_list:
+        # dark red #ff342e
+        # return ['background-color: #ff342e' if is_color else '' for v in table_highlight]
+        #for v in table_highlight:
+        if is_color is True:
+            #table_highlight = table_highlight.assign(is_dark_red=True)
+            table_highlight['is_dark_red'] = True
+        else:
+            #table_highlight = table_highlight.assign(is_dark_red=False)
+            table_highlight['is_dark_red'] = False
+    print(table_highlight)
+    return table_highlight
+"""
+"""
+    OutputTableHistory = OutputTableHistory.assign(
+        is_jam=lambda dataframe: dataframe['B1-Equation'].map(lambda c: True if c in listofJamMessages else False)
+    )
+
+table_highlight = table_highlight.assign( is_dark_red = lambda dataframe: dataframe[])
+"""
+
+
+@app.post(
+    "/api/GenerateReport/{analysisType}/{occurences}/{legs}/{intermittent}/{consecutiveDays}/{ata}/{exclude_EqID}/{airline_operator}/{include_current_message}/{prev_fromDate}/{prev_toDate}/{curr_fromDate}/{curr_toDate}")
+async def generateDeltaReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int,
+                              ata: str, exclude_EqID: str, airline_operator: str, include_current_message: int,
+                              prev_fromDate: str, prev_toDate: str, curr_fromDate: str, curr_toDate: str):
+    print("prev dates: ", prev_fromDate, " - ", prev_toDate)
+    print("curr dates: ", curr_fromDate, " - ", curr_toDate)
+
+    ## Previous dates computation
+    if not (prev_fromDate is None and prev_toDate is None):
+        MDCdataDF = connect_database_MDCdata(ata, exclude_EqID, airline_operator, include_current_message,
+                                             prev_fromDate, prev_toDate)
+
+        print(":: MDC DF PREV ::")
+        print(MDCdataDF)
+
+        # Date formatting
+        MDCdataDF["DateAndTime"] = pd.to_datetime(MDCdataDF["DateAndTime"])
+        # print(MDCdataDF["DateAndTime"])
+        MDCdataDF["Flight Leg No"].fillna(value=0.0,
+                                          inplace=True)  # Null values preprocessing - if 0 = Currentflightphase
+        # print(MDCdataDF["Flight Leg No"])
+        MDCdataDF["Flight Phase"].fillna(False, inplace=True)  # NuCell values preprocessing for currentflightphase
+        MDCdataDF["Intermittent"].fillna(value=-1, inplace=True)  # Null values preprocessing for currentflightphase
+        MDCdataDF["Intermittent"].replace(to_replace=">", value="9",
+                                          inplace=True)  # > represents greater than 8 Intermittent values
+        MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
+
+        MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
+        MDCdataDF.fillna(value=" ", inplace=True)  # replacing all REMAINING null values to a blank string
+        MDCdataDF.sort_values(by="DateAndTime", ascending=False, inplace=True, ignore_index=True)
+
+        AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail#"]].drop_duplicates(
+            ignore_index=True)  # unique pairs of AC SN and Tail# for use in analysis
+        AircraftTailPairDF.columns = ["AC SN", "Tail#"]  # re naming the columns to match History/Daily analysis output
+
+        DatesinData = MDCdataDF["DateAndTime"].dt.date.unique()  # these are the dates in the data in Datetime format.
+        NumberofDays = len(
+            MDCdataDF["DateAndTime"].dt.date.unique())  # to pass into Daily analysis number of days in data
+        latestDay = str(MDCdataDF.loc[0, "DateAndTime"].date())  # to pass into Daily analysis
+        LastLeg = max(MDCdataDF["Flight Leg No"])  # Latest Leg in the data
+        MDCdataArray = MDCdataDF.to_numpy()  # converting to numpy to work with arrays
+
+        # MDCMessagesDF = pd.read_csv(MDCMessagesURL_path, encoding="utf8")  # bring messages and inputs into a Dataframe
+        MDCMessagesDF = connect_database_MDCmessagesInputs()
+        MDCMessagesArray = MDCMessagesDF.to_numpy()  # converting to numpy to work with arrays
+        ShapeMDCMessagesArray = MDCMessagesArray.shape  # tuple of the shape of the MDC message data (#rows, #columns)
+
+        # TopMessagesDF = pd.read_csv(TopMessagesURL_path)  # bring messages and inputs into a Dataframe
+        TopMessagesDF = connect_database_TopMessagesSheet()
+        TopMessagesArray = TopMessagesDF.to_numpy()  # converting to numpy to work with arrays
+
+        UniqueSerialNumArray = []
+
+        if (airline_operator.upper() == "SKW"):
+            airline_id = 101
+        Flagsreport = 1  # this is here to initialize the variable. user must start report by choosing Newreport = True
+        # Flagsreport: int, AircraftSN: str, , newreport: int, CurrentFlightPhaseEnabled: int
+        if (include_current_message == 1):
+            CurrentFlightPhaseEnabled = 1  # 1 includes current phase i.e. include
+        else:
+            CurrentFlightPhaseEnabled = 0  # 0 does not include current phase i.e. exclude
+
+        MaxAllowedOccurances = occurences  # flag for Total number of occurences -> T
+        MaxAllowedConsecLegs = legs  # flag for consecutive legs -> CF
+        MaxAllowedConsecDays = consecutiveDays
+        if intermittent > 9:
+            MaxAllowedIntermittent = 9  # flag for intermittent values ->IM
+        else:
+            MaxAllowedIntermittent = intermittent  # flag for intermittent values ->IM
+        # Bcode = equationID
+        newreport = True  # set a counter variable to bring back it to false
+
+        if (analysisType.lower() == "history"):
+            # global UniqueSerialNumArray
+
+            HistoryanalysisDF = MDCdataDF
+            ShapeHistoryanalysisDF = HistoryanalysisDF.shape  # tuple of the shape of the history data (#rows, #columns)
+            HistoryanalysisArray = MDCdataArray
+            NumAC = HistoryanalysisDF["Aircraft"].nunique()  # number of unique aircraft SN in the data
+            UniqueSerialNumArray = HistoryanalysisDF.Aircraft.unique()  # unique aircraft values
+            SerialNumFreqSeries = HistoryanalysisDF.Aircraft.value_counts()  # the index of this var contains the AC with the most occurrences
+            MaxOfAnAC = SerialNumFreqSeries[0]  # the freq series sorts in descending order, max value is top
+
+            # Define the arrays as numpy
+            MDCeqns_array = np.empty((MaxOfAnAC, NumAC), object)  # MDC messages for each AC stored in one array
+            MDCDates_array = np.empty((MaxOfAnAC, NumAC), object)  # Dates for a message for each AC stored in one array
+            MDCLegs_array = np.empty((MaxOfAnAC, NumAC),
+                                     object)  # Flight Legs for a message for each AC stored in one array
+            MDCIntermittent_array = np.empty((MaxOfAnAC, NumAC),
+                                             object)  # stores the intermittence values for each message of each array
+            FourDigATA_array = np.empty((MaxOfAnAC, NumAC), object)  # stores the 4digATAs of each message in one array
+            TwoDigATA_array = np.empty((MaxOfAnAC, NumAC), object)  # stores the 2digATAs of each message in one array
+            global MDCeqns_arrayforgraphing
+            MDCeqns_arrayforgraphing = np.empty((MaxOfAnAC, NumAC),
+                                                object)  # MDC messages for each AC stored in an array for graphing, due to current messages issue
+
+            if CurrentFlightPhaseEnabled == 1:  # Show all, current and history
+                MDCFlightPhase_array = np.ones((MaxOfAnAC, NumAC), int)
+            elif CurrentFlightPhaseEnabled == 0:  # Only show history
+                MDCFlightPhase_array = np.empty((MaxOfAnAC, NumAC), object)
+
+            Messages_LastRow = ShapeMDCMessagesArray[0]  # taken from the shape of the array
+            Flags_array = np.empty((Messages_LastRow, NumAC), object)
+            FlightLegsEx = 'Flight legs above 32,600 for the following A/C: '  # at 32767 the DCU does not incrementmore the flight counter, so the MDC gets data for the same 32767 over and over until the limit of MDC logs per flight leg is reached (20 msgs per leg), when reached the MDC stops storing data since it gets always the same 32767
+            TotalOccurances_array = np.empty((Messages_LastRow, NumAC), int)
+            ConsecutiveDays_array = np.empty((Messages_LastRow, NumAC), int)
+            ConsecutiveLegs_array = np.empty((Messages_LastRow, NumAC), int)
+            IntermittentInLeg_array = np.empty((Messages_LastRow, NumAC), int)
+
+            # 2D array looping, columns (SNcounter) rows (MDCsheetcounter)
+            for SNCounter in range(0, NumAC):  # start counter over each aircraft (columns)
+
+                MDCArrayCounter = 0  # rows of each different array
+
+                for MDCsheetCounter in range(0, ShapeHistoryanalysisDF[0]):  # counter over each entry  (rows)
+
+                    # If The Serial number on the historyanalysisarray matches the current Serial Number, copy
+                    if HistoryanalysisArray[MDCsheetCounter, 0] == UniqueSerialNumArray[SNCounter]:
+                        # Serial numbers match, record information
+                        #       SNcounter -->
+                        # format for these arrays :   | AC1 | AC2 | AC3 |.... | NumAC
+                        # MDCarraycounter(vertically)| xx | xx | xx |...
+                        MDCeqns_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 14]
+                        MDCDates_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 8]
+                        MDCLegs_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 2]
+                        MDCIntermittent_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 13]
+
+                        if HistoryanalysisArray[MDCsheetCounter, 11]:  # populating counts array
+                            FourDigATA_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 5]
+                            TwoDigATA_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 3]
+
+                        if CurrentFlightPhaseEnabled == 0:  # populating the empty array
+                            MDCFlightPhase_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 11]
+
+                        MDCArrayCounter = MDCArrayCounter + 1
+
+                # arrays with the same size as the MDC messages sheet (3519) checks if each message exists in each ac
+                for MessagessheetCounter in range(0, Messages_LastRow):
+
+                    # Initialize Counts, etc
+
+                    # Total Occurances
+                    eqnCount = 0
+
+                    # Consecutive Days
+                    ConsecutiveDays = 0
+                    MaxConsecutiveDays = 0
+                    tempDate = pd.to_datetime(latestDay)
+                    DaysCount = 0
+
+                    # Consecutive Legs
+                    ConsecutiveLegs = 0
+                    MaxConsecutiveLegs = 0
+                    tempLeg = LastLeg
+
+                    # Intermittent
+                    IntermittentFlightLegs = 0
+
+                    MDCArrayCounter = 0
+
+                    while MDCArrayCounter < MaxOfAnAC:
+                        if MDCeqns_array[MDCArrayCounter, SNCounter]:
+                            # Not Empty, and not current                                      B code
+                            if MDCeqns_array[MDCArrayCounter, SNCounter] == MDCMessagesArray[MessagessheetCounter, 12] \
+                                    and MDCFlightPhase_array[MDCArrayCounter, SNCounter]:
+
+                                MDCeqns_arrayforgraphing[MDCArrayCounter, SNCounter] = MDCeqns_array[
+                                    MDCArrayCounter, SNCounter]
+
+                                # Total Occurances
+                                # Count this as 1 occurance
+                                eqnCount = eqnCount + 1
+
+                                # Consecutive Days
+                                currentdate = pd.to_datetime(MDCDates_array[MDCArrayCounter, SNCounter])
+                                # first date and fivedaysafter
+                                # if a flag was raised in the previous count, it has to be reset and a new fivedaysafter is declared
+                                if eqnCount == 1 or flag == True:
+                                    flag = False
+                                    FiveDaysAfter = currentdate + datetime.timedelta(5)
+
+                                # by checking when its even or odd, we can check if the message occurred twice in 5 days
+                                # if the second time it occurred is below fivedaysafter, flag is true
+                                # if the second time it occurred is greater than fivedaysafter, flag is false
+                                # if eqncount is odd, flag is false and new fivedaysafter is declared
+                                if (eqnCount % 2) == 0:
+                                    if currentdate <= FiveDaysAfter:
+                                        flag = True
+                                    else:
+                                        flag = False
+                                else:
+                                    FiveDaysAfter = currentdate + datetime.timedelta(5)
+                                    flag = False
+
+                                if currentdate.day == tempDate.day \
+                                        and currentdate.month == tempDate.month \
+                                        and currentdate.year == tempDate.year:
+
+                                    DaysCount = 1  # 1 because consecutive means 1 day since it occured
+                                    tempDate = tempDate - datetime.timedelta(1)
+                                    ConsecutiveDays = ConsecutiveDays + 1
+
+                                    if ConsecutiveDays >= MaxConsecutiveDays:
+                                        MaxConsecutiveDays = ConsecutiveDays
+
+                                elif MDCDates_array[MDCArrayCounter, SNCounter] < tempDate:
+
+                                    # If not consecutive, start over
+                                    if ConsecutiveDays >= MaxConsecutiveDays:
+                                        MaxConsecutiveDays = ConsecutiveDays
+
+                                    ConsecutiveDays = 1
+                                    # Days count is the delta between this current date and the previous temp date
+                                    DaysCount += abs(tempDate - currentdate).days + 1
+                                    tempDate = currentdate - datetime.timedelta(1)
+
+                                # Consecutive Legs
+                                if MDCLegs_array[MDCArrayCounter, SNCounter] == tempLeg:
+
+                                    tempLeg = tempLeg - 1
+                                    ConsecutiveLegs = ConsecutiveLegs + 1
+
+                                    if ConsecutiveLegs > MaxConsecutiveLegs:
+                                        MaxConsecutiveLegs = ConsecutiveLegs
+
+                                else:
+
+                                    # If not consecutive, start over
+                                    ConsecutiveLegs = 1
+                                    tempLeg = MDCLegs_array[MDCArrayCounter, SNCounter]
+
+                                # Intermittent
+                                # Taking the maximum intermittent value
+                                x = MDCIntermittent_array[MDCArrayCounter, SNCounter]
+                                # if isinstance(x, numbers.Number) and MDCIntermittent_array[MDCArrayCounter, SNCounter] > IntermittentFlightLegs:
+                                if MDCIntermittent_array[MDCArrayCounter, SNCounter] > IntermittentFlightLegs:
+                                    IntermittentFlightLegs = MDCIntermittent_array[MDCArrayCounter, SNCounter]
+                                # End if Intermittent numeric check
+
+                                # Other
+                                # Check that the legs is not over the given limit
+                                Flags_array[MessagessheetCounter, SNCounter] = ''
+                                if MDCLegs_array[MDCArrayCounter, SNCounter] > 32600:
+                                    FlightLegsEx = FlightLegsEx + str(UniqueSerialNumArray[SNCounter]) + ' (' + str(
+                                        MDCLegs_array[MDCArrayCounter, SNCounter]) + ')' + ' '
+                                # End if Legs flag
+
+                                # Check for Other Flags
+                                if MDCMessagesArray[MessagessheetCounter, 13]:
+                                    # Immediate (occurrance flag in excel MDC Messages inputs sheet) - JAM RELATED FLAGS
+                                    if MDCMessagesArray[MessagessheetCounter, 13] == 1 and MDCMessagesArray[
+                                        MessagessheetCounter, 14] == 0:
+                                        # Immediate Flag required
+                                        # lIST OF MESSAGES TO BE FLAGGED AS SOON AS POSTED
+                                        # ["B1-309178","B1-309179","B1-309180","B1-060044","B1-060045","B1-007973",
+                                        # "B1-060017","B1-006551","B1-240885","B1-006552","B1-006553","B1-006554",
+                                        # "B1-006555","B1-007798","B1-007772","B1-240938","B1-007925","B1-007905",
+                                        # "B1-007927","B1-007915","B1-007926","B1-007910","B1-007928","B1-007920"]
+                                        Flags_array[MessagessheetCounter, SNCounter] = str(
+                                            MDCMessagesArray[MessagessheetCounter, 12]) + " occured at least once."
+
+
+                                    elif MDCMessagesArray[MessagessheetCounter, 13] == 2 and \
+                                            MDCMessagesArray[MessagessheetCounter, 14] == 5 and \
+                                            flag == True:
+                                        # Triggered twice in 5 days
+                                        # "B1-008350","B1-008351","B1-008360","B1-008361"
+                                        Flags_array[MessagessheetCounter, SNCounter] = str(MDCMessagesArray[
+                                                                                               MessagessheetCounter, 12]) + " occured at least twice in 5 days. "
+                            MDCArrayCounter += 1
+
+                        else:
+                            MDCArrayCounter = MaxOfAnAC
+
+                            # Next MDCArray Counter
+
+                    TotalOccurances_array[MessagessheetCounter, SNCounter] = eqnCount
+                    ConsecutiveDays_array[MessagessheetCounter, SNCounter] = MaxConsecutiveDays
+                    ConsecutiveLegs_array[MessagessheetCounter, SNCounter] = MaxConsecutiveLegs
+                    IntermittentInLeg_array[MessagessheetCounter, SNCounter] = IntermittentFlightLegs
+                # Next MessagessheetCounter
+            # Next SNCounter
+
+            MAINtable_array_temp = np.empty((1, 18), object)  # 18 because its history #????????
+            currentRow = 0
+            MAINtable_array = []
+            for SNCounter in range(0, NumAC):
+                for EqnCounter in range(0, Messages_LastRow):
+
+                    # Continue with Report
+                    if TotalOccurances_array[EqnCounter, SNCounter] >= MaxAllowedOccurances \
+                            or ConsecutiveDays_array[EqnCounter, SNCounter] >= MaxAllowedConsecDays \
+                            or ConsecutiveLegs_array[EqnCounter, SNCounter] >= MaxAllowedConsecLegs \
+                            or IntermittentInLeg_array[EqnCounter, SNCounter] >= MaxAllowedIntermittent \
+                            or Flags_array[EqnCounter, SNCounter]:
+
+                        # Populate Flags Array
+                        if TotalOccurances_array[EqnCounter, SNCounter] >= MaxAllowedOccurances:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Total occurances exceeded " + str(
+                                MaxAllowedOccurances) + " occurances. "
+
+                        if ConsecutiveDays_array[EqnCounter, SNCounter] >= MaxAllowedConsecDays:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Maximum consecutive days exceeded " + str(
+                                MaxAllowedConsecDays) + " days. "
+
+                        if ConsecutiveLegs_array[EqnCounter, SNCounter] >= MaxAllowedConsecLegs:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Maximum consecutive flight legs exceeded " + str(
+                                MaxAllowedConsecLegs) + " flight legs. "
+
+                        if IntermittentInLeg_array[EqnCounter, SNCounter] >= MaxAllowedIntermittent:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Maximum intermittent occurances for one flight leg exceeded " + str(
+                                MaxAllowedIntermittent) + " occurances. "
+
+                        # populating the final array (Table)
+                        MAINtable_array_temp[0, 0] = UniqueSerialNumArray[SNCounter]
+                        MAINtable_array_temp[0, 1] = MDCMessagesArray[EqnCounter, 8]
+                        MAINtable_array_temp[0, 2] = MDCMessagesArray[EqnCounter, 4]
+                        MAINtable_array_temp[0, 3] = MDCMessagesArray[EqnCounter, 0]
+                        MAINtable_array_temp[0, 4] = MDCMessagesArray[EqnCounter, 1]
+                        MAINtable_array_temp[0, 5] = MDCMessagesArray[EqnCounter, 12]
+                        MAINtable_array_temp[0, 6] = MDCMessagesArray[EqnCounter, 7]
+                        MAINtable_array_temp[0, 7] = MDCMessagesArray[EqnCounter, 11]
+                        MAINtable_array_temp[0, 8] = TotalOccurances_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 9] = ConsecutiveDays_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 10] = ConsecutiveLegs_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 11] = IntermittentInLeg_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 12] = Flags_array[EqnCounter, SNCounter]
+
+                        # if the input is empty set the priority to 4
+                        if MDCMessagesArray[EqnCounter, 15] == 0:
+                            MAINtable_array_temp[0, 13] = 4
+                        else:
+                            MAINtable_array_temp[0, 13] = MDCMessagesArray[EqnCounter, 15]
+
+                        # For B1-006424 & B1-006430 Could MDC Trend tool assign Priority 3 if logged on A/C below 10340, 15317. Priority 1 if logged on 10340, 15317, 19001 and up
+                        if MDCMessagesArray[EqnCounter, 12] == "B1-006424" or MDCMessagesArray[
+                            EqnCounter, 12] == "B1-006430":
+                            if int(UniqueSerialNumArray[SNCounter]) <= 10340 and int(
+                                    UniqueSerialNumArray[SNCounter]) > 10000:
+                                MAINtable_array_temp[0, 13] = 3
+                            elif int(UniqueSerialNumArray[SNCounter]) > 10340 and int(
+                                    UniqueSerialNumArray[SNCounter]) < 11000:
+                                MAINtable_array_temp[0, 13] = 1
+                            elif int(UniqueSerialNumArray[SNCounter]) <= 15317 and int(
+                                    UniqueSerialNumArray[SNCounter]) > 15000:
+                                MAINtable_array_temp[0, 13] = 3
+                            elif int(UniqueSerialNumArray[SNCounter]) > 15317 and int(
+                                    UniqueSerialNumArray[SNCounter]) < 16000:
+                                MAINtable_array_temp[0, 13] = 1
+                            elif int(UniqueSerialNumArray[SNCounter]) >= 19001 and int(
+                                    UniqueSerialNumArray[SNCounter]) < 20000:
+                                MAINtable_array_temp[0, 13] = 1
+
+                        # check the content of MHIRJ ISE recommendation and add to array
+                        if MDCMessagesArray[EqnCounter, 16] == 0:
+                            MAINtable_array_temp[0, 15] = ""
+                        else:
+                            MAINtable_array_temp[0, 15] = MDCMessagesArray[EqnCounter, 16]
+
+                        # check content of "additional"
+                        if MDCMessagesArray[EqnCounter, 17] == 0:
+                            MAINtable_array_temp[0, 16] = ""
+                        else:
+                            MAINtable_array_temp[0, 16] = MDCMessagesArray[EqnCounter, 17]
+
+                        # check content of "MHIRJ Input"
+                        if MDCMessagesArray[EqnCounter, 18] == 0:
+                            MAINtable_array_temp[0, 17] = ""
+                        else:
+                            MAINtable_array_temp[0, 17] = MDCMessagesArray[EqnCounter, 18]
+
+                        # Check for the equation in the Top Messages sheet
+                        TopCounter = 0
+                        Top_LastRow = TopMessagesArray.shape[0]
+                        while TopCounter < Top_LastRow:
+
+                            # Look for the flagged equation in the Top Messages Sheet
+                            if MDCMessagesArray[EqnCounter][12] == TopMessagesArray[TopCounter, 4]:
+
+                                # Found the equation in the Top Messages Sheet. Put the information in the last column
+                                MAINtable_array_temp[0, 14] = "Known Nuissance: " + str(
+                                    TopMessagesArray[TopCounter, 13]) \
+                                                              + " / In-Service Document: " + str(
+                                    TopMessagesArray[TopCounter, 11]) \
+                                                              + " / FIM Task: " + str(TopMessagesArray[TopCounter, 10]) \
+                                                              + " / Remarks: " + str(TopMessagesArray[TopCounter, 14])
+
+                                # Not need to keep looking
+                                TopCounter = TopMessagesArray.shape[0]
+
+                            else:
+                                # Not equal, go to next equation
+                                MAINtable_array_temp[0, 14] = ""
+                                TopCounter += 1
+                        # End while
+
+                        if currentRow == 0:
+                            MAINtable_array = np.array(MAINtable_array_temp)
+                        else:
+                            MAINtable_array = np.append(MAINtable_array, MAINtable_array_temp, axis=0)
+                        # End if Build MAINtable_array
+
+                        # Move to next Row on Main page for next flag
+                        currentRow = currentRow + 1
+            TitlesArrayHistory = ["AC SN", "EICAS Message", "MDC Message", "LRU", "ATA", "B1-Equation", "Type",
+                                  "Equation Description", "Total Occurences", "Consective Days", "Consecutive FL",
+                                  "Intermittent", "Reason(s) for flag", "Priority",
+                                  "Known Top Message - Recommended Documents",
+                                  "MHIRJ ISE Recommendation", "Additional Comments", "MHIRJ ISE Input"]
+
+            # Converts the Numpy Array to Dataframe to manipulate
+            # pd.set_option('display.max_rows', None)
+            # Main table
+            global OutputTableHistory
+            OutputTableHistory = pd.DataFrame(data=MAINtable_array, columns=TitlesArrayHistory).fillna(" ").sort_values(
+                by=["Type", "Priority"])
+            OutputTableHistory = OutputTableHistory.merge(AircraftTailPairDF, on="AC SN")  # Tail # added
+            OutputTableHistory = OutputTableHistory[
+                ["Tail#", "AC SN", "EICAS Message", "MDC Message", "LRU", "ATA", "B1-Equation", "Type",
+                 "Equation Description", "Total Occurences", "Consective Days", "Consecutive FL",
+                 "Intermittent", "Reason(s) for flag", "Priority", "Known Top Message - Recommended Documents",
+                 "MHIRJ ISE Recommendation", "Additional Comments",
+                 "MHIRJ ISE Input"]]  # Tail# added to output table which means that column order has to be re ordered
+            # OutputTableHistory.to_csv("OutputTableHistory.csv")
+            # OutputTableHistory_json = OutputTableHistory.to_json(orient = 'records')
+            # return OutputTableHistory_json
+
+            # Get the list of JAM Messages.
+            listofJamMessages = list()
+            all_jam_messages = connect_to_fetch_all_jam_messages()
+            for each_jam_message in all_jam_messages['Jam_Message']:
+                listofJamMessages.append(each_jam_message)
+            print(listofJamMessages)
+
+            # HIGHLIGHT function starts here
+            OutputTableHistory = OutputTableHistory.assign(
+                is_jam=lambda dataframe: dataframe['B1-Equation'].map(
+                    lambda c: True if c in listofJamMessages else False)
+            )
+            print(OutputTableHistory)
+            prev_history = OutputTableHistory
+            # OutputTableHistory_json = OutputTableHistory.to_json(orient='records')
+            # return OutputTableHistory_json
+
+    ## Current dates computation
+    if not (curr_fromDate is None and curr_toDate is None):
+        MDCdataDF = connect_database_MDCdata(ata, exclude_EqID, airline_operator, include_current_message,
+                                             curr_fromDate, curr_toDate)
+
+        print(":: MDC DF CURR ::")
+        print(MDCdataDF)
+
+        # Date formatting
+        MDCdataDF["DateAndTime"] = pd.to_datetime(MDCdataDF["DateAndTime"])
+        # print(MDCdataDF["DateAndTime"])
+        MDCdataDF["Flight Leg No"].fillna(value=0.0,
+                                          inplace=True)  # Null values preprocessing - if 0 = Currentflightphase
+        # print(MDCdataDF["Flight Leg No"])
+        MDCdataDF["Flight Phase"].fillna(False, inplace=True)  # NuCell values preprocessing for currentflightphase
+        MDCdataDF["Intermittent"].fillna(value=-1, inplace=True)  # Null values preprocessing for currentflightphase
+        MDCdataDF["Intermittent"].replace(to_replace=">", value="9",
+                                          inplace=True)  # > represents greater than 8 Intermittent values
+        MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
+
+        MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
+        MDCdataDF.fillna(value=" ", inplace=True)  # replacing all REMAINING null values to a blank string
+        MDCdataDF.sort_values(by="DateAndTime", ascending=False, inplace=True, ignore_index=True)
+
+        AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail#"]].drop_duplicates(
+            ignore_index=True)  # unique pairs of AC SN and Tail# for use in analysis
+        AircraftTailPairDF.columns = ["AC SN", "Tail#"]  # re naming the columns to match History/Daily analysis output
+
+        DatesinData = MDCdataDF["DateAndTime"].dt.date.unique()  # these are the dates in the data in Datetime format.
+        NumberofDays = len(
+            MDCdataDF["DateAndTime"].dt.date.unique())  # to pass into Daily analysis number of days in data
+        latestDay = str(MDCdataDF.loc[0, "DateAndTime"].date())  # to pass into Daily analysis
+        LastLeg = max(MDCdataDF["Flight Leg No"])  # Latest Leg in the data
+        MDCdataArray = MDCdataDF.to_numpy()  # converting to numpy to work with arrays
+
+        # MDCMessagesDF = pd.read_csv(MDCMessagesURL_path, encoding="utf8")  # bring messages and inputs into a Dataframe
+        MDCMessagesDF = connect_database_MDCmessagesInputs()
+        MDCMessagesArray = MDCMessagesDF.to_numpy()  # converting to numpy to work with arrays
+        ShapeMDCMessagesArray = MDCMessagesArray.shape  # tuple of the shape of the MDC message data (#rows, #columns)
+
+        # TopMessagesDF = pd.read_csv(TopMessagesURL_path)  # bring messages and inputs into a Dataframe
+        TopMessagesDF = connect_database_TopMessagesSheet()
+        TopMessagesArray = TopMessagesDF.to_numpy()  # converting to numpy to work with arrays
+
+        UniqueSerialNumArray = []
+
+        if (airline_operator.upper() == "SKW"):
+            airline_id = 101
+        Flagsreport = 1  # this is here to initialize the variable. user must start report by choosing Newreport = True
+        # Flagsreport: int, AircraftSN: str, , newreport: int, CurrentFlightPhaseEnabled: int
+        if (include_current_message == 1):
+            CurrentFlightPhaseEnabled = 1  # 1 includes current phase i.e. include
+        else:
+            CurrentFlightPhaseEnabled = 0  # 0 does not include current phase i.e. exclude
+
+        MaxAllowedOccurances = occurences  # flag for Total number of occurences -> T
+        MaxAllowedConsecLegs = legs  # flag for consecutive legs -> CF
+        MaxAllowedConsecDays = consecutiveDays
+        if intermittent > 9:
+            MaxAllowedIntermittent = 9  # flag for intermittent values ->IM
+        else:
+            MaxAllowedIntermittent = intermittent  # flag for intermittent values ->IM
+        # Bcode = equationID
+        newreport = True  # set a counter variable to bring back it to false
+
+        if (analysisType.lower() == "history"):
+            # global UniqueSerialNumArray
+
+            HistoryanalysisDF = MDCdataDF
+            ShapeHistoryanalysisDF = HistoryanalysisDF.shape  # tuple of the shape of the history data (#rows, #columns)
+            HistoryanalysisArray = MDCdataArray
+            NumAC = HistoryanalysisDF["Aircraft"].nunique()  # number of unique aircraft SN in the data
+            UniqueSerialNumArray = HistoryanalysisDF.Aircraft.unique()  # unique aircraft values
+            SerialNumFreqSeries = HistoryanalysisDF.Aircraft.value_counts()  # the index of this var contains the AC with the most occurrences
+            MaxOfAnAC = SerialNumFreqSeries[0]  # the freq series sorts in descending order, max value is top
+
+            # Define the arrays as numpy
+            MDCeqns_array = np.empty((MaxOfAnAC, NumAC), object)  # MDC messages for each AC stored in one array
+            MDCDates_array = np.empty((MaxOfAnAC, NumAC), object)  # Dates for a message for each AC stored in one array
+            MDCLegs_array = np.empty((MaxOfAnAC, NumAC),
+                                     object)  # Flight Legs for a message for each AC stored in one array
+            MDCIntermittent_array = np.empty((MaxOfAnAC, NumAC),
+                                             object)  # stores the intermittence values for each message of each array
+            FourDigATA_array = np.empty((MaxOfAnAC, NumAC), object)  # stores the 4digATAs of each message in one array
+            TwoDigATA_array = np.empty((MaxOfAnAC, NumAC), object)  # stores the 2digATAs of each message in one array
+
+            MDCeqns_arrayforgraphing = np.empty((MaxOfAnAC, NumAC),
+                                                object)  # MDC messages for each AC stored in an array for graphing, due to current messages issue
+
+            if CurrentFlightPhaseEnabled == 1:  # Show all, current and history
+                MDCFlightPhase_array = np.ones((MaxOfAnAC, NumAC), int)
+            elif CurrentFlightPhaseEnabled == 0:  # Only show history
+                MDCFlightPhase_array = np.empty((MaxOfAnAC, NumAC), object)
+
+            Messages_LastRow = ShapeMDCMessagesArray[0]  # taken from the shape of the array
+            Flags_array = np.empty((Messages_LastRow, NumAC), object)
+            FlightLegsEx = 'Flight legs above 32,600 for the following A/C: '  # at 32767 the DCU does not incrementmore the flight counter, so the MDC gets data for the same 32767 over and over until the limit of MDC logs per flight leg is reached (20 msgs per leg), when reached the MDC stops storing data since it gets always the same 32767
+            TotalOccurances_array = np.empty((Messages_LastRow, NumAC), int)
+            ConsecutiveDays_array = np.empty((Messages_LastRow, NumAC), int)
+            ConsecutiveLegs_array = np.empty((Messages_LastRow, NumAC), int)
+            IntermittentInLeg_array = np.empty((Messages_LastRow, NumAC), int)
+
+            # 2D array looping, columns (SNcounter) rows (MDCsheetcounter)
+            for SNCounter in range(0, NumAC):  # start counter over each aircraft (columns)
+
+                MDCArrayCounter = 0  # rows of each different array
+
+                for MDCsheetCounter in range(0, ShapeHistoryanalysisDF[0]):  # counter over each entry  (rows)
+
+                    # If The Serial number on the historyanalysisarray matches the current Serial Number, copy
+                    if HistoryanalysisArray[MDCsheetCounter, 0] == UniqueSerialNumArray[SNCounter]:
+                        # Serial numbers match, record information
+                        #       SNcounter -->
+                        # format for these arrays :   | AC1 | AC2 | AC3 |.... | NumAC
+                        # MDCarraycounter(vertically)| xx | xx | xx |...
+                        MDCeqns_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 14]
+                        MDCDates_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 8]
+                        MDCLegs_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 2]
+                        MDCIntermittent_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 13]
+
+                        if HistoryanalysisArray[MDCsheetCounter, 11]:  # populating counts array
+                            FourDigATA_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 5]
+                            TwoDigATA_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 3]
+
+                        if CurrentFlightPhaseEnabled == 0:  # populating the empty array
+                            MDCFlightPhase_array[MDCArrayCounter, SNCounter] = HistoryanalysisArray[MDCsheetCounter, 11]
+
+                        MDCArrayCounter = MDCArrayCounter + 1
+
+                # arrays with the same size as the MDC messages sheet (3519) checks if each message exists in each ac
+                for MessagessheetCounter in range(0, Messages_LastRow):
+
+                    # Initialize Counts, etc
+
+                    # Total Occurances
+                    eqnCount = 0
+
+                    # Consecutive Days
+                    ConsecutiveDays = 0
+                    MaxConsecutiveDays = 0
+                    tempDate = pd.to_datetime(latestDay)
+                    DaysCount = 0
+
+                    # Consecutive Legs
+                    ConsecutiveLegs = 0
+                    MaxConsecutiveLegs = 0
+                    tempLeg = LastLeg
+
+                    # Intermittent
+                    IntermittentFlightLegs = 0
+
+                    MDCArrayCounter = 0
+
+                    while MDCArrayCounter < MaxOfAnAC:
+                        if MDCeqns_array[MDCArrayCounter, SNCounter]:
+                            # Not Empty, and not current                                      B code
+                            if MDCeqns_array[MDCArrayCounter, SNCounter] == MDCMessagesArray[MessagessheetCounter, 12] \
+                                    and MDCFlightPhase_array[MDCArrayCounter, SNCounter]:
+
+                                MDCeqns_arrayforgraphing[MDCArrayCounter, SNCounter] = MDCeqns_array[
+                                    MDCArrayCounter, SNCounter]
+
+                                # Total Occurances
+                                # Count this as 1 occurance
+                                eqnCount = eqnCount + 1
+
+                                # Consecutive Days
+                                currentdate = pd.to_datetime(MDCDates_array[MDCArrayCounter, SNCounter])
+                                # first date and fivedaysafter
+                                # if a flag was raised in the previous count, it has to be reset and a new fivedaysafter is declared
+                                if eqnCount == 1 or flag == True:
+                                    flag = False
+                                    FiveDaysAfter = currentdate + datetime.timedelta(5)
+
+                                # by checking when its even or odd, we can check if the message occurred twice in 5 days
+                                # if the second time it occurred is below fivedaysafter, flag is true
+                                # if the second time it occurred is greater than fivedaysafter, flag is false
+                                # if eqncount is odd, flag is false and new fivedaysafter is declared
+                                if (eqnCount % 2) == 0:
+                                    if currentdate <= FiveDaysAfter:
+                                        flag = True
+                                    else:
+                                        flag = False
+                                else:
+                                    FiveDaysAfter = currentdate + datetime.timedelta(5)
+                                    flag = False
+
+                                if currentdate.day == tempDate.day \
+                                        and currentdate.month == tempDate.month \
+                                        and currentdate.year == tempDate.year:
+
+                                    DaysCount = 1  # 1 because consecutive means 1 day since it occured
+                                    tempDate = tempDate - datetime.timedelta(1)
+                                    ConsecutiveDays = ConsecutiveDays + 1
+
+                                    if ConsecutiveDays >= MaxConsecutiveDays:
+                                        MaxConsecutiveDays = ConsecutiveDays
+
+                                elif MDCDates_array[MDCArrayCounter, SNCounter] < tempDate:
+
+                                    # If not consecutive, start over
+                                    if ConsecutiveDays >= MaxConsecutiveDays:
+                                        MaxConsecutiveDays = ConsecutiveDays
+
+                                    ConsecutiveDays = 1
+                                    # Days count is the delta between this current date and the previous temp date
+                                    DaysCount += abs(tempDate - currentdate).days + 1
+                                    tempDate = currentdate - datetime.timedelta(1)
+
+                                # Consecutive Legs
+                                if MDCLegs_array[MDCArrayCounter, SNCounter] == tempLeg:
+
+                                    tempLeg = tempLeg - 1
+                                    ConsecutiveLegs = ConsecutiveLegs + 1
+
+                                    if ConsecutiveLegs > MaxConsecutiveLegs:
+                                        MaxConsecutiveLegs = ConsecutiveLegs
+
+                                else:
+
+                                    # If not consecutive, start over
+                                    ConsecutiveLegs = 1
+                                    tempLeg = MDCLegs_array[MDCArrayCounter, SNCounter]
+
+                                # Intermittent
+                                # Taking the maximum intermittent value
+                                x = MDCIntermittent_array[MDCArrayCounter, SNCounter]
+                                # if isinstance(x, numbers.Number) and MDCIntermittent_array[MDCArrayCounter, SNCounter] > IntermittentFlightLegs:
+                                if MDCIntermittent_array[MDCArrayCounter, SNCounter] > IntermittentFlightLegs:
+                                    IntermittentFlightLegs = MDCIntermittent_array[MDCArrayCounter, SNCounter]
+                                # End if Intermittent numeric check
+
+                                # Other
+                                # Check that the legs is not over the given limit
+                                Flags_array[MessagessheetCounter, SNCounter] = ''
+                                if MDCLegs_array[MDCArrayCounter, SNCounter] > 32600:
+                                    FlightLegsEx = FlightLegsEx + str(UniqueSerialNumArray[SNCounter]) + ' (' + str(
+                                        MDCLegs_array[MDCArrayCounter, SNCounter]) + ')' + ' '
+                                # End if Legs flag
+
+                                # Check for Other Flags
+                                if MDCMessagesArray[MessagessheetCounter, 13]:
+                                    # Immediate (occurrance flag in excel MDC Messages inputs sheet) - JAM RELATED FLAGS
+                                    if MDCMessagesArray[MessagessheetCounter, 13] == 1 and MDCMessagesArray[
+                                        MessagessheetCounter, 14] == 0:
+                                        # Immediate Flag required
+                                        # lIST OF MESSAGES TO BE FLAGGED AS SOON AS POSTED
+                                        # ["B1-309178","B1-309179","B1-309180","B1-060044","B1-060045","B1-007973",
+                                        # "B1-060017","B1-006551","B1-240885","B1-006552","B1-006553","B1-006554",
+                                        # "B1-006555","B1-007798","B1-007772","B1-240938","B1-007925","B1-007905",
+                                        # "B1-007927","B1-007915","B1-007926","B1-007910","B1-007928","B1-007920"]
+                                        Flags_array[MessagessheetCounter, SNCounter] = str(
+                                            MDCMessagesArray[MessagessheetCounter, 12]) + " occured at least once."
+
+
+                                    elif MDCMessagesArray[MessagessheetCounter, 13] == 2 and \
+                                            MDCMessagesArray[MessagessheetCounter, 14] == 5 and \
+                                            flag == True:
+                                        # Triggered twice in 5 days
+                                        # "B1-008350","B1-008351","B1-008360","B1-008361"
+                                        Flags_array[MessagessheetCounter, SNCounter] = str(MDCMessagesArray[
+                                                                                               MessagessheetCounter, 12]) + " occured at least twice in 5 days. "
+                            MDCArrayCounter += 1
+
+                        else:
+                            MDCArrayCounter = MaxOfAnAC
+
+                            # Next MDCArray Counter
+
+                    TotalOccurances_array[MessagessheetCounter, SNCounter] = eqnCount
+                    ConsecutiveDays_array[MessagessheetCounter, SNCounter] = MaxConsecutiveDays
+                    ConsecutiveLegs_array[MessagessheetCounter, SNCounter] = MaxConsecutiveLegs
+                    IntermittentInLeg_array[MessagessheetCounter, SNCounter] = IntermittentFlightLegs
+                # Next MessagessheetCounter
+            # Next SNCounter
+
+            MAINtable_array_temp = np.empty((1, 18), object)  # 18 because its history #????????
+            currentRow = 0
+            MAINtable_array = []
+            for SNCounter in range(0, NumAC):
+                for EqnCounter in range(0, Messages_LastRow):
+
+                    # Continue with Report
+                    if TotalOccurances_array[EqnCounter, SNCounter] >= MaxAllowedOccurances \
+                            or ConsecutiveDays_array[EqnCounter, SNCounter] >= MaxAllowedConsecDays \
+                            or ConsecutiveLegs_array[EqnCounter, SNCounter] >= MaxAllowedConsecLegs \
+                            or IntermittentInLeg_array[EqnCounter, SNCounter] >= MaxAllowedIntermittent \
+                            or Flags_array[EqnCounter, SNCounter]:
+
+                        # Populate Flags Array
+                        if TotalOccurances_array[EqnCounter, SNCounter] >= MaxAllowedOccurances:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Total occurances exceeded " + str(
+                                MaxAllowedOccurances) + " occurances. "
+
+                        if ConsecutiveDays_array[EqnCounter, SNCounter] >= MaxAllowedConsecDays:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Maximum consecutive days exceeded " + str(
+                                MaxAllowedConsecDays) + " days. "
+
+                        if ConsecutiveLegs_array[EqnCounter, SNCounter] >= MaxAllowedConsecLegs:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Maximum consecutive flight legs exceeded " + str(
+                                MaxAllowedConsecLegs) + " flight legs. "
+
+                        if IntermittentInLeg_array[EqnCounter, SNCounter] >= MaxAllowedIntermittent:
+                            Flags_array[EqnCounter, SNCounter] = Flags_array[
+                                                                     EqnCounter, SNCounter] + "Maximum intermittent occurances for one flight leg exceeded " + str(
+                                MaxAllowedIntermittent) + " occurances. "
+
+                        # populating the final array (Table)
+                        MAINtable_array_temp[0, 0] = UniqueSerialNumArray[SNCounter]
+                        MAINtable_array_temp[0, 1] = MDCMessagesArray[EqnCounter, 8]
+                        MAINtable_array_temp[0, 2] = MDCMessagesArray[EqnCounter, 4]
+                        MAINtable_array_temp[0, 3] = MDCMessagesArray[EqnCounter, 0]
+                        MAINtable_array_temp[0, 4] = MDCMessagesArray[EqnCounter, 1]
+                        MAINtable_array_temp[0, 5] = MDCMessagesArray[EqnCounter, 12]
+                        MAINtable_array_temp[0, 6] = MDCMessagesArray[EqnCounter, 7]
+                        MAINtable_array_temp[0, 7] = MDCMessagesArray[EqnCounter, 11]
+                        MAINtable_array_temp[0, 8] = TotalOccurances_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 9] = ConsecutiveDays_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 10] = ConsecutiveLegs_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 11] = IntermittentInLeg_array[EqnCounter, SNCounter]
+                        MAINtable_array_temp[0, 12] = Flags_array[EqnCounter, SNCounter]
+
+                        # if the input is empty set the priority to 4
+                        if MDCMessagesArray[EqnCounter, 15] == 0:
+                            MAINtable_array_temp[0, 13] = 4
+                        else:
+                            MAINtable_array_temp[0, 13] = MDCMessagesArray[EqnCounter, 15]
+
+                        # For B1-006424 & B1-006430 Could MDC Trend tool assign Priority 3 if logged on A/C below 10340, 15317. Priority 1 if logged on 10340, 15317, 19001 and up
+                        if MDCMessagesArray[EqnCounter, 12] == "B1-006424" or MDCMessagesArray[
+                            EqnCounter, 12] == "B1-006430":
+                            if int(UniqueSerialNumArray[SNCounter]) <= 10340 and int(
+                                    UniqueSerialNumArray[SNCounter]) > 10000:
+                                MAINtable_array_temp[0, 13] = 3
+                            elif int(UniqueSerialNumArray[SNCounter]) > 10340 and int(
+                                    UniqueSerialNumArray[SNCounter]) < 11000:
+                                MAINtable_array_temp[0, 13] = 1
+                            elif int(UniqueSerialNumArray[SNCounter]) <= 15317 and int(
+                                    UniqueSerialNumArray[SNCounter]) > 15000:
+                                MAINtable_array_temp[0, 13] = 3
+                            elif int(UniqueSerialNumArray[SNCounter]) > 15317 and int(
+                                    UniqueSerialNumArray[SNCounter]) < 16000:
+                                MAINtable_array_temp[0, 13] = 1
+                            elif int(UniqueSerialNumArray[SNCounter]) >= 19001 and int(
+                                    UniqueSerialNumArray[SNCounter]) < 20000:
+                                MAINtable_array_temp[0, 13] = 1
+
+                        # check the content of MHIRJ ISE recommendation and add to array
+                        if MDCMessagesArray[EqnCounter, 16] == 0:
+                            MAINtable_array_temp[0, 15] = ""
+                        else:
+                            MAINtable_array_temp[0, 15] = MDCMessagesArray[EqnCounter, 16]
+
+                        # check content of "additional"
+                        if MDCMessagesArray[EqnCounter, 17] == 0:
+                            MAINtable_array_temp[0, 16] = ""
+                        else:
+                            MAINtable_array_temp[0, 16] = MDCMessagesArray[EqnCounter, 17]
+
+                        # check content of "MHIRJ Input"
+                        if MDCMessagesArray[EqnCounter, 18] == 0:
+                            MAINtable_array_temp[0, 17] = ""
+                        else:
+                            MAINtable_array_temp[0, 17] = MDCMessagesArray[EqnCounter, 18]
+
+                        # Check for the equation in the Top Messages sheet
+                        TopCounter = 0
+                        Top_LastRow = TopMessagesArray.shape[0]
+                        while TopCounter < Top_LastRow:
+
+                            # Look for the flagged equation in the Top Messages Sheet
+                            if MDCMessagesArray[EqnCounter][12] == TopMessagesArray[TopCounter, 4]:
+
+                                # Found the equation in the Top Messages Sheet. Put the information in the last column
+                                MAINtable_array_temp[0, 14] = "Known Nuissance: " + str(
+                                    TopMessagesArray[TopCounter, 13]) \
+                                                              + " / In-Service Document: " + str(
+                                    TopMessagesArray[TopCounter, 11]) \
+                                                              + " / FIM Task: " + str(TopMessagesArray[TopCounter, 10]) \
+                                                              + " / Remarks: " + str(TopMessagesArray[TopCounter, 14])
+
+                                # Not need to keep looking
+                                TopCounter = TopMessagesArray.shape[0]
+
+                            else:
+                                # Not equal, go to next equation
+                                MAINtable_array_temp[0, 14] = ""
+                                TopCounter += 1
+                        # End while
+
+                        if currentRow == 0:
+                            MAINtable_array = np.array(MAINtable_array_temp)
+                        else:
+                            MAINtable_array = np.append(MAINtable_array, MAINtable_array_temp, axis=0)
+                        # End if Build MAINtable_array
+
+                        # Move to next Row on Main page for next flag
+                        currentRow = currentRow + 1
+            TitlesArrayHistory = ["AC SN", "EICAS Message", "MDC Message", "LRU", "ATA", "B1-Equation", "Type",
+                                  "Equation Description", "Total Occurences", "Consective Days", "Consecutive FL",
+                                  "Intermittent", "Reason(s) for flag", "Priority",
+                                  "Known Top Message - Recommended Documents",
+                                  "MHIRJ ISE Recommendation", "Additional Comments", "MHIRJ ISE Input"]
+
+            # Converts the Numpy Array to Dataframe to manipulate
+            # pd.set_option('display.max_rows', None)
+            # Main table
+            #global OutputTableHistory
+            OutputTableHistory = pd.DataFrame(data=MAINtable_array, columns=TitlesArrayHistory).fillna(" ").sort_values(
+                by=["Type", "Priority"])
+            OutputTableHistory = OutputTableHistory.merge(AircraftTailPairDF, on="AC SN")  # Tail # added
+            OutputTableHistory = OutputTableHistory[
+                ["Tail#", "AC SN", "EICAS Message", "MDC Message", "LRU", "ATA", "B1-Equation", "Type",
+                 "Equation Description", "Total Occurences", "Consective Days", "Consecutive FL",
+                 "Intermittent", "Reason(s) for flag", "Priority", "Known Top Message - Recommended Documents",
+                 "MHIRJ ISE Recommendation", "Additional Comments",
+                 "MHIRJ ISE Input"]]  # Tail# added to output table which means that column order has to be re ordered
+            # OutputTableHistory.to_csv("OutputTableHistory.csv")
+            # OutputTableHistory_json = OutputTableHistory.to_json(orient = 'records')
+            # return OutputTableHistory_json
+
+            # Get the list of JAM Messages.
+            listofJamMessages = list()
+            all_jam_messages = connect_to_fetch_all_jam_messages()
+            for each_jam_message in all_jam_messages['Jam_Message']:
+                listofJamMessages.append(each_jam_message)
+            print(listofJamMessages)
+
+            # HIGHLIGHT function starts here
+            OutputTableHistory = OutputTableHistory.assign(
+                is_jam=lambda dataframe: dataframe['B1-Equation'].map(
+                    lambda c: True if c in listofJamMessages else False)
+            )
+            print(OutputTableHistory)
+            curr_history = OutputTableHistory
+            # OutputTableHistory_json = OutputTableHistory.to_json(orient='records')
+            # return OutputTableHistory_json
+
+    # define lists, does the message in the new report exist in the previous or not
+    True_list, False_list = create_delta_lists(prev_history, curr_history)
+    print(":: TRUE LIST :: ", True_list)
+    print(":: FALSE LIST :: ", False_list)
+    curr_history.set_index(["AC SN", "B1-Equation"], drop=False, inplace=True)
+    prev_history.set_index(["AC SN", "B1-Equation"], drop=False, inplace=True)
+    # grab only what exists in the new report from the old report
+    prev_history_nums = prev_history.loc[True_list]
+    # add the items that only exist in the new report and add them to the old report
+    # (this has to be after the True/False Lists are created, bc if done before then everything will be True (list))
+    # this was done bc the slicing done for slice_ needs to compare two dataframes with identical indexes
+    prev_history_nums = prev_history_nums.append(curr_history.loc[False_list])
+    # sort indexes
+    curr_history.sort_index(inplace=True)
+    prev_history_nums.sort_index(inplace=True)
+
+    print(prev_history_nums)
+
+    delta = highlight_delta(curr_history,True_list)
+    delta_1 = highlight_delta(delta, False_list)
+
+    delta_json = delta_1.to_json(orient = 'records')
+    return delta_json
+
+
+    """
+    # color what existed previously
+    delta = curr_history.style.apply(highlight_delta, axis=1, delta_list=True_list)
+    # color what is new
+    delta = delta.apply(highlight_delta, axis=1, delta_list=False_list)
+
+    # coloring the counters
+    idx = pd.IndexSlice
+    # comparing the counters on each report
+    # since there are some rows that are added to the prev_history_nums (see above),
+    # the values on both dataframes will be equal at the corresponding indexes and wont be highlighted
+    # the logic here will only highlight whats strictly greater
+    slice_ = idx[
+        idx[curr_history["Total Occurrences"] > prev_history_nums["Total Occurrences"]], ["Total Occurrences"]]
+    slice_2 = idx[
+        idx[curr_history["Consecutive Days"] > prev_history_nums["Consecutive Days"]], ["Consecutive Days"]]
+    slice_3 = idx[idx[curr_history["Consecutive FL"] > prev_history_nums["Consecutive FL"]], ["Consecutive FL"]]
+    slice_4 = idx[idx[curr_history["Intermittent"] > prev_history_nums["Intermittent"]], ["Intermittent"]]
+    delta = delta.set_properties(**{'background-color': '#fabf8f'}, subset=slice_)
+    delta = delta.set_properties(**{'background-color': '#fabf8f'}, subset=slice_2)
+    delta = delta.set_properties(**{'background-color': '#fabf8f'}, subset=slice_3)
+    delta = delta.set_properties(**{'background-color': '#fabf8f'}, subset=slice_4)
+"""
