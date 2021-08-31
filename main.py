@@ -3007,6 +3007,59 @@ def connect_db_MDCdata_chartb(from_dt, to_dt):
 # for reference -> http://localhost:8000/Landing_Chart_B/15/11-11-2020/11-17-2020
 @app.post("/api/Landing_Chart_B/{top_n}/{from_dt}/{to_dt}")
 async def get_Chart_B(top_n: int,from_dt: str, to_dt: str):
+    try:
+        Topvalues2 = top_n
+        MDCdataDF = connect_db_MDCdata_chartb(from_dt, to_dt)
+        AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail"]].drop_duplicates(ignore_index= True) # unique pairs of AC SN and Tail# for use in analysis
+        AircraftTailPairDF.columns = ["AC SN","Tail"] # re naming the columns to match History/Daily analysis output
+        chartADF = pd.merge(left = MDCdataDF[["Aircraft","ATA Main", "Equation ID"]], right = AircraftTailPairDF, left_on="Aircraft", right_on="AC SN")
+        chartADF["Aircraft"] = chartADF["Aircraft"] + " / " + chartADF["Tail"]
+        chartADF.drop(labels = ["AC SN", "Tail"], axis = 1, inplace = True)
+        MessageCountbyAircraftATA = chartADF.groupby(["Aircraft","ATA Main"]).count()
+        # https://towardsdatascience.com/stacked-bar-charts-with-pythons-matplotlib-f4020e4eb4a7
+        # https://stackoverflow.com/questions/44309507/stacked-bar-plot-using-matplotlib
+        # transpose the indexes. where the ATA label becomes the column and the aircraft is row. counts are middle
+        TransposedMessageCountbyAircraftATA = MessageCountbyAircraftATA["Equation ID"].unstack()
+
+        # fill Null values with 0
+        TransposedMessageCountbyAircraftATA.fillna(value= 0, inplace= True)
+
+        # sum all the counts by row, plus create a new column called sum
+        TransposedMessageCountbyAircraftATA["Sum"] = TransposedMessageCountbyAircraftATA.sum(axis=1)
+
+        # sort the dataframe by the values of sum, and from the topvalues2 the user chooses
+        TransposedMessageCountbyAircraftATA = TransposedMessageCountbyAircraftATA.sort_values("Sum",ascending=False).tail(Topvalues2)
+
+        # create a final dataframe for plotting without the new column created before
+        TransposedMessageCountbyAircraftATAfinalPLOT = TransposedMessageCountbyAircraftATA.drop(["Sum"], axis=1)
+
+        totals = TransposedMessageCountbyAircraftATA["Sum"]
+        print("total in landing chart B is : ",totals)
+        chart_b_df_json = TransposedMessageCountbyAircraftATAfinalPLOT.to_json(orient='index')
+	    #return chart_b_df_json
+        # #image settings
+        # ax8 = TransposedMessageCountbyAircraftATAfinalPLOT.plot(kind='barh', stacked=True, figsize=(16, 9))
+        # ax8.set_ylabel('Aircraft Serial Number')
+        # ax8.set_title('Magnitude of messages in data')
+        # ax8.grid(b= True, which= "both", axis= "x", alpha= 0.3)
+        # rects8 = ax8.containers[-1] 
+
+
+        # # here to add column labeling
+        # for i, total in enumerate(totals):
+        #     ax8.text(totals[i], rects8[i].get_y() +0.15 , round(total), ha='left')
+            
+        # plt.show()
+        return chart_b_df_json
+    except Exception as es :
+ 	    print(es)
+
+
+
+
+"""
+@app.post("/api/Landing_Chart_B/{top_n}/{from_dt}/{to_dt}")
+# async def get_Chart_B(top_n: int,from_dt: str, to_dt: str):
 	try:
 	    MDCdataDF_chartb = connect_db_MDCdata_chartb(from_dt, to_dt)
 	    Topvalues2 = top_n
@@ -3027,7 +3080,7 @@ async def get_Chart_B(top_n: int,from_dt: str, to_dt: str):
 	    chart_b_df_json = TransposedMessageCountbyAircraftATAfinalPLOT.to_json(orient='index')
 	    return chart_b_df_json
 	except Exception as es :
-		print(es)
+ 		print(es)"""
 
 
 """
@@ -3173,6 +3226,26 @@ async def get_CorelationDataPID(p_id: str):
     corelation_df_json = corelation_df.to_json(orient='records')
     return corelation_df_json
 
+#Correlation_process_status
+#31st August
+def connect_correlation_process_status():
+    sql = "SELECT DISTINCT Correlation_Process_Status.ID,Correlation_Process_Status.Process,Correlation_Process_Status.Status,Correlation_Process_Status.Status_Message,Correlation_Process_Status.Date FROM Correlation_Process_Status ORDER BY Correlation_Process_Status.Date DESC"
+
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        correlation_process_status = pd.read_sql(sql, conn)
+        #MDCdataDF.columns = column_names
+        return correlation_process_status
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+@app.post("/api/corelation_process_status")
+async def get_correlation_process_status():
+    correlation_process_status = connect_correlation_process_status()
+    correlation_process_status_json = correlation_process_status.to_json(orient='records')
+    return correlation_process_status_json
 
 def connect_database_for_eqId(all):
     sql = "SELECT DISTINCT Airline_MDC_Data.Equation_ID FROM Airline_MDC_Data"
@@ -3231,4 +3304,3 @@ async def create_upload_file1(file: UploadFile = File(...)):
 async def create_upload_file2(file: UploadFile = File(...)):
     result = insertData_TopMessageSheet(file)
     return {"result": result}   
-
