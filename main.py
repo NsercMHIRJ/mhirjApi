@@ -3320,6 +3320,71 @@ async def create_upload_file(file: UploadFile = File(...)):
 async def create_upload_file1(file: UploadFile = File(...)):
     result = insertData_MDCMessageInputs(file)
     return {"result": result} 
+
+# update input message data    
+def connect_database_for_update(equation_id,LRU,ATA,Message_No,Comp_ID,Message,Fault_Logged,Status):
+   # try:
+         
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        cursor = conn.cursor()  
+        sql =" UPDATE  MDCMessagesInputs_CSV_UPLOAD SET "
+        if  LRU.strip() :
+            sql +=  " [LRU]=  '" + LRU + "' , "
+                               
+        if  ATA.strip() :
+            sql +=  "[ATA] = '" + ATA + "' , "
+
+        if  Message_No.strip() :
+            sql +=  "[Message_No] = '" + Message_No + "' , "
+
+        if  Comp_ID.strip() :
+            sql +=  "[Comp_ID] = '" + Comp_ID + "' , "
+
+        if  Message.strip() :
+            sql +=  "[Message] = '" + Message + "' ,"     
+
+        if  Fault_Logged.strip() :
+            sql +=  "[Fault_Logged] = '" + Fault_Logged + "' ,"  
+
+        if  Status.strip() :
+            sql +=  "[Status] = '" + Status + "'"                
+ 
+        sql += "  WHERE [Equation_ID] = '" + equation_id + "'"
+ 
+        print("------ATA ----")
+        print(ATA)
+        print("---print sql builder----")
+        print(sql)
+ 
+        cursor.execute(sql)
+               
+ 
+        # sql+= cursor.execute(" UPDATE  MDCMessagesInputs_CSV_UPLOAD SET [LRU]= ? , [ATA]=? WHERE [Equation_ID]=?",
+        #           LRU,
+        #           ATA,
+        #           equation_id
+        #         ) 
+       
+ 
+ 
+        # update_sql_df = pd.read_sql(sql, conn)
+        # MDCdataDF.columns = column_names
+        conn.commit()
+        conn.close()
+        # return update_sql_df
+        return "Successfully UPDATE into MDCMessagesInputs"
+ 
+    # except pyodbc.Error as err:
+    #     print("Couldn't connect to Server")
+    #     print("Error message:- " + str(err))
+ 
+@app.post("/api/update_input_message_data/{Equation_ID}/{LRU}/{ATA}/{Message_No}/{Comp_ID}/{Message}/{Fault_Logged}/{Status}")
+async def update_data(equation_id:str, LRU:str,ATA:str, Message_No:str, Comp_ID:str ,Message:str,Fault_Logged:str,Status:str):
+    update_data = connect_database_for_update(equation_id,LRU,ATA,Message_No,Comp_ID,Message,Fault_Logged,Status)
+    return update_data
+   
+
       
 @app.post("/api/uploadfile_top_message_data/")
 async def create_upload_file2(file: UploadFile = File(...)):

@@ -18,10 +18,18 @@ db_driver = "ODBC Driver 17 for SQL Server"
 def to_df(file):
    data = file.file
    data = csv.reader(codecs.iterdecode(data,'utf-8'), delimiter=',')
-   # print("DATA IN to_df:",data)
    header = next(data)
    df = pd.DataFrame(data, columns=header)
    return df
+
+# for input message
+def to_df_inputMessage(file):
+  data = file.file
+  data = csv.reader(codecs.iterdecode(data,'utf-8-sig'), delimiter=',')
+  header = next(data)
+  df = pd.DataFrame(data, columns=header)
+  return df  
+
 def insertData(file):
    df = to_df(file)
    df.columns = df.columns.str.replace(' ', '_')
@@ -174,98 +182,101 @@ def insertData(file):
 
 
 def insertData_MDCMessageInputs(file):
-    df = to_df(file)
-    print(df.columns)
-    print("MDCMESS::\n",df)
-    df.columns = df.columns.str.replace(' ', '_')
-    df.columns = df.columns.str.replace('#', '_NO')
-    df.columns = df.columns.str.replace('-', '_')
-    # Connect to SQL Server
-    print("MDC INPUT ::: ",df.columns)
-    conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
-                              user=db_username, password=db_password)
-    cursor = conn.cursor()
-
-    ##### CREATE TABLE QUERY for MDCMessageInputs.csv
-    cursor.execute('''
-    IF OBJECT_ID('dbo.MDCMessagesInputs_CSV_UPLOAD', 'U') IS NULL
-    CREATE TABLE [dbo].[MDCMessagesInputs_CSV_UPLOAD](
-	[LRU] [varchar](max) NULL,
-	[ATA] [varchar](max) NULL,
-	[Message_NO] [varchar](max) NULL,
-	[Comp_ID] [varchar](max) NULL,
-	[Message] [varchar](max) NULL,
-	[Fault_Logged] [varchar](max) NULL,
-	[Status] [varchar](max) NULL,
-	[Message_Type] [varchar](max) NULL,
-	[EICAS] [varchar](4000) NULL,
-	[Timer] [nvarchar](max) NULL,
-	[Logic] [nvarchar](max) NULL,
-	[Equation_Description] [varchar](4000) NULL,
-	[Equation_ID] [varchar](255) NULL,
-	[Occurance_Flag] [nvarchar](max) NULL,
-	[Days_Count] [nvarchar](max) NULL,
-	[Priority_] [varchar](4000) NULL,
-	[MHIRJ_ISE_Recommended_Action] [varchar](4000) NULL,
-	[Additional_Comments] [varchar](4000) NULL,
-	[MHIRJ_ISE_inputs] [varchar](4000) NULL,
-    [MEL_or_No_Dispatch] [varchar](4000) NULL
-    )
-    ''')
-    conn.commit()
-
-    #INSERT DATAFRAME INTO TABLE
-    for index,row in df.iterrows():
-        print("DATA INPUT : ",row.LRU)
-        cursor.execute('''
-        INSERT INTO [dbo].[MDCMessagesInputs_CSV_UPLOAD](
-        [LRU],
-        [ATA],
-        [Message_NO], 
-        [Comp_ID], 
-        [Message], 
-        [Fault_Logged], 
-        [Status], 
-        [Message_Type],
-        [EICAS], 
-        [Timer], 
-        [Logic], 
-        [Equation_Description],
-        [Equation_ID], 
-        [Occurance_Flag], 
-        [Days_Count], 
-        [Priority_], 
-        [MHIRJ_ISE_Recommended_Action],
-        [Additional_Comments], 
-        [MHIRJ_ISE_inputs],
-        [MEL_or_No_Dispatch]
-        ) 
-        VALUES 
-        (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        ''',
-        row.LRU,
-        row.ATA,
-        row.Message_NO,
-        row.Comp_ID,
-        row.Message,
-        row.Fault_Logged,
-        row.Status,
-        row.Message_Type,
-        row.EICAS,
-        row.Timer,
-        row.Logic,
-        row.Equation_Description,
-        row.Equation_ID,
-        row.Occurance_Flag,
-        row.Days_Count,
-        row.Priority_,
-        row.MHIRJ_ISE_Recommended_Action,
-        row.Additional_Comments,
-        row.MHIRJ_ISE_inputs,
-        row.MEL_or_No_Dispatch
-        )
-        conn.commit()
-    return "Successfully inserted into MDCMessagesInputs"
+   df = to_df_inputMessage(file)
+   # df = to_df(file)
+   print(df.columns)
+   print("MDCMESS::\n",df)
+   df.columns = df.columns.str.replace(' ', '_')
+   df.columns = df.columns.str.replace('#', 'NO')
+   df.columns = df.columns.str.replace('-', '_')
+   # Connect to SQL Server
+   print("MDC INPUT ::: ",df.columns)
+   conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                             user=db_username, password=db_password)
+   cursor = conn.cursor()
+ 
+   ##### CREATE TABLE QUERY for MDCMessageInputs.csv
+   cursor.execute('''
+   IF OBJECT_ID('dbo.MDCMessagesInputs_CSV_UPLOAD', 'U') IS NULL
+   CREATE TABLE [dbo].[MDCMessagesInputs_CSV_UPLOAD](
+   [LRU] [varchar](max) NULL,
+   [ATA] [varchar](max) NULL,
+   [Message_NO] [varchar](max) NULL,
+   [Comp_ID] [varchar](max) NULL,
+   [Message] [varchar](max) NULL,
+   [Fault_Logged] [varchar](max) NULL,
+   [Status] [varchar](max) NULL,
+   [Message_Type] [varchar](max) NULL,
+   [EICAS] [varchar](4000) NULL,
+   [Timer] [nvarchar](max) NULL,
+   [Logic] [nvarchar](max) NULL,
+   [Equation_Description] [varchar](4000) NULL,
+   [Equation_ID] [varchar](255) NULL,
+   [Occurrence_Flag] [nvarchar](max) NULL,
+   [Days_Count] [nvarchar](max) NULL,
+   [Priority_] [varchar](4000) NULL,
+   [MHIRJ_ISE_Recommended_Action] [varchar](4000) NULL,
+   [Additional_Comments] [varchar](4000) NULL,
+   [MHIRJ_ISE_inputs] [varchar](4000) NULL,
+   [MEL_or_No_Dispatch] [varchar](4000) NULL
+   )
+   ''')
+   conn.commit()
+ 
+   #INSERT DATAFRAME INTO TABLE
+   for index,row in df.iterrows():
+       print("DATA INPUT : ",row.LRU)
+       cursor.execute('''
+       INSERT INTO [dbo].[MDCMessagesInputs_CSV_UPLOAD](
+       [LRU],
+       [ATA],
+       [Message_NO],
+       [Comp_ID],
+       [Message],
+       [Fault_Logged],
+       [Status],
+       [Message_Type],
+       [EICAS],
+       [Timer],
+       [Logic],
+       [Equation_Description],
+       [Equation_ID],
+       [Occurrence_Flag],
+       [Days_Count],
+       [Priority_],
+       [MHIRJ_ISE_Recommended_Action],
+       [Additional_Comments],
+       [MHIRJ_ISE_inputs],
+       [MEL_or_No_Dispatch]
+       )
+       VALUES
+       (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       ''',
+       row.LRU,
+       row.ATA,
+       row.Message_NO,
+       row.Comp_ID,
+       row.Message,
+       row.Fault_Logged,
+       row.Status,
+       row.Message_Type,
+       row.EICAS,
+       row.Timer,
+       row.Logic,
+       row.Equation_Description,
+       row.Equation_ID,
+       row.Occurrence_Flag,
+       row.Days_Count,
+       row.Priority_,
+       row.MHIRJ_ISE_Recommended_Action,
+       row.Additional_Comments,
+       row.MHIRJ_ISE_inputs,
+       row.MEL_or_No_Dispatch
+       )
+       conn.commit()
+   return "Successfully inserted into MDCMessagesInputs"
+ 
+ 
 
 
 def insertData_TopMessageSheet(file):
