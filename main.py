@@ -3322,38 +3322,50 @@ async def create_upload_file1(file: UploadFile = File(...)):
     return {"result": result} 
 
 # update input message data    
-def connect_database_for_update(equation_id,LRU,ATA,Message_No,Comp_ID,Message,Fault_Logged,Status):
+def connect_database_for_update(Equation_ID,EICAS,Priority_,MHIRJ_ISE_inputs,MHIRJ_ISE_Recommended_Action,Additional_Comments,MEL_or_No_Dispatch):
    # try:
          
         conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
                               user=db_username, password=db_password)
         cursor = conn.cursor()  
         sql =" UPDATE  MDCMessagesInputs_CSV_UPLOAD SET "
-        if  LRU.strip() :
-            sql +=  " [LRU]=  '" + LRU + "' , "
+
+        sqlConditions = ''
+        numberOfConditions = 0
+        if  EICAS.strip() :
+            numberOfConditions += 1
+            sql +=  " [EICAS]=  '" + EICAS + "' "
                                
-        if  ATA.strip() :
-            sql +=  "[ATA] = '" + ATA + "' , "
+        if  Priority_.strip() :
+            numberOfConditions += 1
+            sql += " , " if numberOfConditions > 1 else sql
+            sql +=  " [Priority_] = '" + Priority_ + "'"
 
-        if  Message_No.strip() :
-            sql +=  "[Message_No] = '" + Message_No + "' , "
+        if  MHIRJ_ISE_inputs.strip() :
+            numberOfConditions += 1
+            sql += " , " if numberOfConditions > 1 else sql
+            sql +=  "[MHIRJ_ISE_inputs] = '" + MHIRJ_ISE_inputs + "'"
 
-        if  Comp_ID.strip() :
-            sql +=  "[Comp_ID] = '" + Comp_ID + "' , "
+        if  MHIRJ_ISE_Recommended_Action.strip() :
+            numberOfConditions += 1
+            sql += " , " if numberOfConditions > 1 else sql
+            sql +=  "[MHIRJ_ISE_Recommended_Action] = '" + MHIRJ_ISE_Recommended_Action + "'"
 
-        if  Message.strip() :
-            sql +=  "[Message] = '" + Message + "' ,"     
+        if  Additional_Comments.strip() :
+            numberOfConditions += 1
+            sql += " , " if numberOfConditions > 1 else sql
+            sql +=  "[Additional_Comments] = '" + Additional_Comments + "'"     
 
-        if  Fault_Logged.strip() :
-            sql +=  "[Fault_Logged] = '" + Fault_Logged + "' ,"  
 
-        if  Status.strip() :
-            sql +=  "[Status] = '" + Status + "'"                
+        if  MEL_or_No_Dispatch.strip() :
+            numberOfConditions += 1
+            sql += " , " if numberOfConditions > 1 else sql
+            sql +=  "[MEL_or_No_Dispatch] = '" + MEL_or_No_Dispatch + "'"                
  
-        sql += "  WHERE [Equation_ID] = '" + equation_id + "'"
+        sql += "  WHERE [Equation_ID] = '" + Equation_ID + "'"
  
-        print("------ATA ----")
-        print(ATA)
+        # print("------ATA ----")
+        # print(ATA)
         print("---print sql builder----")
         print(sql)
  
@@ -3379,10 +3391,11 @@ def connect_database_for_update(equation_id,LRU,ATA,Message_No,Comp_ID,Message,F
     #     print("Couldn't connect to Server")
     #     print("Error message:- " + str(err))
  
-@app.post("/api/update_input_message_data/{Equation_ID}/{LRU}/{ATA}/{Message_No}/{Comp_ID}/{Message}/{Fault_Logged}/{Status}")
-async def update_data(equation_id:str, LRU:str,ATA:str, Message_No:str, Comp_ID:str ,Message:str,Fault_Logged:str,Status:str):
-    update_data = connect_database_for_update(equation_id,LRU,ATA,Message_No,Comp_ID,Message,Fault_Logged,Status)
+@app.post("/api/update_input_message_data/{Equation_ID}/{EICAS}/{Priority_}/{MHIRJ_ISE_inputs}/{MHIRJ_ISE_Recommended_Action}/{Additional_Comments}/{MEL_or_No_Dispatch}")
+async def update_data(Equation_ID:str, EICAS:str,Priority_:str, MHIRJ_ISE_inputs:str, MHIRJ_ISE_Recommended_Action:str ,Additional_Comments:str,MEL_or_No_Dispatch:str):
+    update_data = connect_database_for_update(Equation_ID,EICAS,Priority_,MHIRJ_ISE_inputs,MHIRJ_ISE_Recommended_Action,Additional_Comments,MEL_or_No_Dispatch)
     return update_data
+
    
 
       
