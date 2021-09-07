@@ -107,9 +107,9 @@ def insertData(file):
 
        row_intermittent = 0
        try:
-        row_intermittent = int(row['Intermittent'])
+          row_intermittent = int(row['Intermittent'])
        except:
-          row_intermittent = ''
+          row_intermittent = 9
       
        
        if res_intermittent == '':  
