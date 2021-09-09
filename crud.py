@@ -280,7 +280,17 @@ def insertData_MDCMessageInputs(file):
 
 
 def insertData_TopMessageSheet(file):
-    df = to_df(file)
+    df = to_df_inputMessage(file)
+    df.columns = df.columns.str.replace('ATA ', 'ATA')
+    df.columns = df.columns.str.replace('EICAS / FDE', 'EICAS_FDE')
+    df.columns = df.columns.str.replace('MDC Msg ', 'MDC_Msg')
+    df.columns = df.columns.str.replace('CRJ\r\n700', 'CRJ_700')
+    df.columns = df.columns.str.replace('CRJ\n700', 'CRJ_700')
+    df.columns = df.columns.str.replace('CRJ\n1000', 'CRJ_1000')
+    df.columns = df.columns.str.replace('CRJ\r\n1000', 'CRJ_1000')
+    df.columns = df.columns.str.replace('MDC \r\nB1-Code ', 'MDC_B1_Code')
+    df.columns = df.columns.str.replace('MDC \nB1-Code ', 'MDC_B1_Code')
+    df.columns = df.columns.str.replace('FIM Task Reference ', 'FIM_Task_Reference')
     df.columns = df.columns.str.replace(' ', '_')
     df.columns = df.columns.str.replace('#', '')
     df.columns = df.columns.str.replace(' / ', '_')
