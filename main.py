@@ -3396,9 +3396,55 @@ async def update_data(Equation_ID:str, EICAS:str,Priority_:str, MHIRJ_ISE_inputs
     update_data = connect_database_for_update(Equation_ID,EICAS,Priority_,MHIRJ_ISE_inputs,MHIRJ_ISE_Recommended_Action,Additional_Comments,MEL_or_No_Dispatch)
     return update_data
 
+
+# delete from MDC messege input    
+
+@app.post("/api/delete/")
+async def delete():
+    delete_data = connect_database_for_delete()
+    return delete_data    
+
+def connect_database_for_delete():
+   
+         
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        cursor = conn.cursor()  
+        sql =" DELETE FROM MDCMessagesInputs_CSV_UPLOAD"
+        print(sql)
+ 
+        cursor.execute(sql)
+        conn.commit()
+        conn.close()
+        # return update_sql_df
+        return "Delete from MDCMessagesInputs"  
+
+# Select all data from MDC messege input   
+def connect_database_for_mdcMessageData():
+    sql = "SELECT * From MDCMessagesInputs_CSV_UPLOAD"
+
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        mdcMessage_df = pd.read_sql(sql, conn)
+        #MDCdataDF.columns = column_names
+        return mdcMessage_df
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+
+
+@app.post("/api/MDC_message_data")
+async def get_mdcMessageData():
+    mdcMessage_df = connect_database_for_mdcMessageData()
+    mdcMessage_df_json =  mdcMessage_df.to_json(orient='records')
+    return  mdcMessage_df_json
+
+
    
 
-      
+#upload top message data     
 @app.post("/api/uploadfile_top_message_data/")
 async def create_upload_file2(file: UploadFile = File(...)):
     result = insertData_TopMessageSheet(file)
