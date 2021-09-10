@@ -99,9 +99,13 @@ def insertData(file):
        print(index) 
        res_intermittent = 0
        try:
-           res_intermittent = res1["ip"][0]
+           res_intermittent = int(res1["ip"][0])
        except:
-           res_intermittent = 0
+           if res_intermittent == '>':
+            res_intermittent = '>'
+           else :
+            res_intermittent = 0
+
        print(res_intermittent)
        print(row['Intermittent'])
 
@@ -109,7 +113,10 @@ def insertData(file):
        try:
           row_intermittent = int(row['Intermittent'])
        except:
-          row_intermittent = 9
+           if row['Intermittent'] == '>':
+            row_intermittent = '>'
+           else :
+            row_intermittent = 0
       
        
        if res_intermittent == '':  
@@ -117,7 +124,10 @@ def insertData(file):
        elif row_intermittent  == '':  
            Max_Intermittent = res_intermittent   
        else:
-           Max_Intermittent = max(int(res_intermittent), row_intermittent)
+           if(res_intermittent == '>' or row_intermittent == '>'):
+               Max_Intermittent = '>'
+           else:   
+               Max_Intermittent = max(int(res_intermittent), row_intermittent)
            print(Max_Intermittent)
        res = cursor.execute("UPDATE [dbo].[Airline_MDC_Data] SET [Intermittent]= ?  WHERE [Aircraft]=? AND [Equation_ID]=? AND [DateAndTime]=? AND [Flight_Leg_No]=? AND [Flight_Phase]=? ",
                        str(Max_Intermittent),
