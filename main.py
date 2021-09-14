@@ -4615,10 +4615,10 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
 	
 
 # blob storage
-@app.post("/api/upload_PM_file/")
-async def pm_upload_blob(file: UploadFile = File(...)):
-    result = run_sample(file)
-    return {"result": result}
+# @app.post("/api/upload_PM_file/")
+# async def pm_upload_blob(file: UploadFile = File(...)):
+#     result = run_sample(file)
+#     return {"result": result}
 
 # Select all data from MDC raw data  
 def connect_database_for_mdcRawData(from_date, to_date):
