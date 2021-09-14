@@ -25,7 +25,7 @@ import os
 import urllib
 from fastapi import FastAPI, File, UploadFile
 from crud import *
-from pm_upload import *
+# from pm_upload import *
 
 
 app = FastAPI()
