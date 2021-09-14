@@ -30,6 +30,17 @@ def to_df_inputMessage(file):
   df = pd.DataFrame(data, columns=header)
   return df  
 
+#fileUploadPercentage = 0
+def getFileUploadStatusPercentage():
+    print('---upload per---')
+    #print(fileUploadPercentage)
+    conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                             user=db_username, password=db_password)
+    cursor = conn.cursor()
+    sql = "SELECT PERCENTAGE FROM MDC_RAW_DATA_STATUS WHERE ID = 1"
+    res1 = pd.read_sql(sql, conn)
+    return {"percentage" : res1['PERCENTAGE'][0]}
+
 def insertData(file):
    df = to_df(file)
    df.columns = df.columns.str.replace(' ', '_')
@@ -79,8 +90,19 @@ def insertData(file):
    # conn.commit()
   
    # Insert DataFrame to Table
+   fileUploadPercentage = 0
+   numberOfRows = len(df)
    for index,row in df.iterrows():
-     
+       percentage = round((index + 1 ) / numberOfRows * 100)
+       fileUploadPercentage = percentage
+       print('----------percentage--------------')
+       print(fileUploadPercentage)
+       cursor.execute('''
+        UPDATE MDC_RAW_DATA_STATUS SET Percentage = ? WHERE ID = 1;
+       ''',fileUploadPercentage)
+       conn.commit();
+
+
        sql = "SELECT [Intermittent] as ip from [dbo].[Airline_MDC_Data] WHERE [Aircraft]= '%s' AND [Equation_ID]='%s' AND [DateAndTime]='%s' AND [Flight_Leg_No]='%s' AND [Flight_Phase]='%s'"  % (
                        row['Aircraft'],
                        row['Equation_ID'],
