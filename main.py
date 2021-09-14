@@ -4615,8 +4615,32 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
 	
 
 # blob storage
-#upload top message data
 @app.post("/api/upload_PM_file/")
 async def pm_upload_blob(file: UploadFile = File(...)):
     result = run_sample(file)
     return {"result": result}
+
+# Select all data from MDC raw data  
+def connect_database_for_mdcRawData(from_date, to_date):
+    sql = "SELECT count(*) OVER () as total, c.* From Airline_MDC_Data c WHERE c.DateAndTime BETWEEN '" + from_date + "' AND '" + to_date + "' "
+
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+                              
+        print(sql)
+        mdcRaw_df = pd.read_sql(sql, conn)
+        #MDCdataDF.columns = column_names
+        return mdcRaw_df
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+@app.post("/api/SELECT_MDC_RAW_data/{from_date}/{to_date}")
+async def get_mdcRawData(from_date:str, to_date:str):
+    mdcRaw_df = connect_database_for_mdcRawData(from_date , to_date)
+    total = mdcRaw_df['total'].iloc[0]
+    mdcRaw_df = mdcRaw_df.drop(columns=['total'])
+    print("total is : ",total)
+    mdcRaw_df_json =  mdcRaw_df.to_json(orient='records')
+    return  {"total":str(total),"data":mdcRaw_df_json}    
