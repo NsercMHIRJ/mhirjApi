@@ -25,6 +25,7 @@ import os
 import urllib
 from fastapi import FastAPI, File, UploadFile
 from crud import *
+from pm_upload import *
 
 
 app = FastAPI()
@@ -4610,3 +4611,12 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
     delta = delta.set_properties(**{'background-color': '#fabf8f'}, subset=slice_3)
     delta = delta.set_properties(**{'background-color': '#fabf8f'}, subset=slice_4)
 """
+
+	
+
+# blob storage
+#upload top message data
+@app.post("/api/upload_PM_file/")
+async def pm_upload_blob(file: UploadFile = File(...)):
+    result = run_sample(file)
+    return {"result": result}
