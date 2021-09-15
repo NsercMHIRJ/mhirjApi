@@ -3152,22 +3152,24 @@ async def get_Stacked_Chart_MDC_PM_Data(start_date:str,end_date:str,top_value:in
 
 #### Corelation Stored Proc Call
 def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
-    equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
-    if "ALL" not in ata:
-        ata = str(tuple(ata.replace(")", "").replace("(", "").replace("'", "").split(",")))
-    sql = ''
+    #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
+    #if "ALL" not in ata:
+    #    ata = str(tuple(ata.replace(")", "").replace("(", "").replace("'", "").split(",")))
 
-    equation_id = str(tuple(equation_id.replace(")","").replace("(","").replace("'","").split(",")))
-    ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
+    #equation_id = str(tuple(equation_id.replace(")","").replace("(","").replace("'","").split(",")))
+    #ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
     sql =""
 
-    sql += "SELECT distinct p_id ,Operator ,Model ,Type ,Serial_No ,N_No ,Date, [Failure Flag] ,[Maint Trans] ,[Maintenance Cancellations] ,[Maintenance Delays] ,Inspection,CampType ,MRB ,Discrepancy ,[Corrective Action] ,[AC Total Hours] ,[AC Total Cycles],[Squawk Source] ,ATA ,Station ,ATA_SUB ,ATA_Main FROM dbo.sample_corelation WHERE CONVERT(date,Date) between '" + from_dt + "'  AND '" + to_dt + "'"
+    sql += "SELECT distinct p_id ,Operator ,Model ,Type ,Serial_No ,N_No ,Date, [Failure Flag] ,[Maint Trans] ,[Maintenance Cancellations] ,[Maintenance Delays] ,Inspection,CampType ,MRB ,Discrepancy ,[Corrective Action] ,[AC Total Hours] ,[AC Total Cycles],[Squawk Source] ,ATA ,Station ,ATA_SUB ,ATA_Main FROM dbo.MDC_PM_TEST_Correlated WHERE CONVERT(date,Date) between '" + from_dt + "'  AND '" + to_dt + "'"
 
 
-    if equation_id:
+    if equation_id!="":
+        equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
+        equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
         sql += "  AND EQ_ID NOT IN " + equation_id
     if "ALL" not in ata :
-        sql += "  AND mdc_ata_Main IN " + ata
+        if ata!="":
+            sql += "  AND ATA_Main IN " + ata
     print(sql)
     try:
         conn = pyodbc.connect(driver=db_driver, host=hostname,
@@ -3182,8 +3184,8 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
 
 
 # for reference -> http://localhost:8000/corelation/11-11-2020/11-12-2020/B1-008003/27
-@app.post("/api/corelation/{fromDate}/{toDate}/{equation_id}/{ata}")
-async def get_CorelationData(fromDate: str , toDate: str, equation_id:str, ata:str):
+@app.post("/api/corelation/{fromDate}/{toDate}")
+async def get_CorelationData(fromDate: str , toDate: str, equation_id:Optional[str]="", ata:Optional[str]=""):
     corelation_df = connect_database_for_corelation(fromDate, toDate, equation_id, ata)
     corelation_df_json = corelation_df.to_json(orient='records')
     return corelation_df_json
