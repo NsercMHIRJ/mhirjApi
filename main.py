@@ -275,13 +275,15 @@ async def generateReport(analysisType: str, occurences: int, legs: int, intermit
     # print(MDCdataDF["Flight Leg No"])
     MDCdataDF["Flight Phase"].fillna(False, inplace=True)  # NuCell values preprocessing for currentflightphase
     MDCdataDF["Intermittent"].fillna(value=-1, inplace=True)  # Null values preprocessing for currentflightphase
-    MDCdataDF["Intermittent"].replace(to_replace=">", value="9",
+    MDCdataDF["Intermittent"].replace(to_replace=">", value=9,
                                       inplace=True)  # > represents greater than 8 Intermittent values
 
-    try:                                  
-       MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int) # cast type to int
+    try:                      
+        #print("data in intermittent ",MDCdataDF["Intermittent"])            
+        MDCdataDF["Intermittent"] = int(MDCdataDF["Intermittent"]) # cast type to int
     except:
-       MDCdataDF["Intermittent"] = 0
+        #print("data in intermittent exec",MDCdataDF["Intermittent"])            
+        MDCdataDF["Intermittent"] = 9
 
 
     MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
