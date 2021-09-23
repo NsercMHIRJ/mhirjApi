@@ -3165,8 +3165,8 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
     #ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
     sql =""
 
-    sql += "SELECT * FROM dbo.MDC_PM_Correlated WHERE CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
-
+    #sql += "SELECT * FROM dbo.MDC_PM_Correlated WHERE CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
+    sql += "SELECT distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3"
 
     if equation_id!="":
         equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
@@ -3189,8 +3189,9 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
 
 
 # for reference -> http://localhost:8000/corelation/11-11-2020/11-12-2020/B1-008003/27
-@app.post("/api/corelation/{fromDate}/{toDate}")
-async def get_CorelationData(fromDate: str , toDate: str, equation_id:Optional[str]="", ata:Optional[str]=""):
+#@app.post("/api/corelation/{fromDate}/{toDate}")
+@app.post("/api/corelation/")
+async def get_CorelationData(fromDate: Optional[str]="" , toDate: Optional[str]="", equation_id:Optional[str]="", ata:Optional[str]=""):
     corelation_df = connect_database_for_corelation(fromDate, toDate, equation_id, ata)
     corelation_df_json = corelation_df.to_json(orient='records')
     return corelation_df_json
