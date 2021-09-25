@@ -3168,15 +3168,16 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
     sql =""
 
     #sql += "SELECT * FROM dbo.MDC_PM_Correlated WHERE CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
-    sql += "SELECT distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3"
+    sql += "select distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, Substring(ATA, 1,2) ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3 AND CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
 
     if equation_id!="":
-        equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
+        #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
+        equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").split(",")))
         equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
-        sql += "  AND EQ_ID NOT IN " + equation_id
+        sql += "  AND EQ_ID IN " + equation_id
     if "ALL" not in ata :
         if ata!="":
-            sql += "  AND ATA_Main IN " + ata
+            sql += "  AND Substring(ATA, 1,2) IN " + ata
     print(sql)
     try:
         conn = pyodbc.connect(driver=db_driver, host=hostname,
@@ -3191,9 +3192,8 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
 
 
 # for reference -> http://localhost:8000/corelation/11-11-2020/11-12-2020/B1-008003/27
-#@app.post("/api/corelation/{fromDate}/{toDate}")
-@app.post("/api/corelation/")
-async def get_CorelationData(fromDate: Optional[str]="" , toDate: Optional[str]="", equation_id:Optional[str]="", ata:Optional[str]=""):
+@app.post("/api/corelation/{fromDate}/{toDate}")
+async def get_CorelationData(fromDate: str, toDate: str, equation_id:Optional[str]="", ata:Optional[str]=""):
     corelation_df = connect_database_for_corelation(fromDate, toDate, equation_id, ata)
     corelation_df_json = corelation_df.to_json(orient='records')
     return corelation_df_json
