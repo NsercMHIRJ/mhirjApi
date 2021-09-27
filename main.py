@@ -4521,60 +4521,41 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
 
     '''highlights delta of two history reports'''
     # check what in the new report exists in the prev. which of tuple(AC SN, B1) exists in the true list
+    curr_history['is_light_orange'] = False
+    curr_history['is_light_red'] = False
     print("my trui list",True_list)
     for each_tuple in curr_history.index.values:
         print("each tuple",each_tuple)
         if each_tuple in True_list:
-            print('if is true :')
+            # print('if is true :')
             is_color = True
-             # already existed in prev report and is not jam
-            curr_history = curr_history.assign(
-                is_light_orange=lambda dataframe: dataframe['B1-Equation'].map(
-                    lambda c: True if c not in listofJamMessages else False)
-            )
-            # if curr_history["B1-Equation"] not in listofJamMessages:
-            #     # light orange
-            #     print("lo")
-            #     # return ['background-color: #fde9d9' if is_color else '' for v in curr_history]
+          
+             
+            curretRow = curr_history.loc[curr_history['AC SN'] == each_tuple[0]]
+            print('--current row----')
+            print(curretRow)
+            isB1EquationExist = curretRow.isin(listofJamMessages).any().any()
+            curr_history.loc[each_tuple[0] , "is_light_orange"] = not isB1EquationExist #reversing bool
+           
 
             # already existed in prev report and is jam
-            curr_history = curr_history.assign(
-                is_light_red=lambda dataframe: dataframe['B1-Equation'].map(
-                    lambda c: True if c in listofJamMessages else False)
-            )
-            # elif curr_history["B1-Equation"] in listofJamMessages:
-            #     # light red
-            #     print("lr")
-            #     # return ['background-color: #f08080' if is_color else '' for v in curr_history]
+          
+            # isB1EquationExist2 = curretRow.isin(listofJamMessages).any().any()
+            curr_history.loc[each_tuple[0] , "is_light_red"] =  isB1EquationExist
+
+            # curr_history = curr_history.assign(
+            #     is_light_red=lambda dataframe: dataframe['B1-Equation'].map(
+            #         lambda c: True if c in listofJamMessages else False)
+            # )
+           
         else :
             print('else :')
-    # if (curr_history["AC SN"], curr_history["B1-Equation"]) in True_list:
-    #     is_color = True
 
-    # for each in curr_history:
-    #     print(is_color)
-    #     if is_color is True:
-    #         # already existed in prev report and is not jam
-    #         curr_history = curr_history.assign(
-    #             is_light_orange=lambda dataframe: dataframe['B1-Equation'].map(
-    #                 lambda c: True if c not in listofJamMessages else False)
-    #         )
-    #         # if curr_history["B1-Equation"] not in listofJamMessages:
-    #         #     # light orange
-    #         #     print("lo")
-    #         #     # return ['background-color: #fde9d9' if is_color else '' for v in curr_history]
-
-    #         # already existed in prev report and is jam
-    #         curr_history = curr_history.assign(
-    #             is_light_red=lambda dataframe: dataframe['B1-Equation'].map(
-    #                 lambda c: True if c in listofJamMessages else False)
-    #         )
-    #         # elif curr_history["B1-Equation"] in listofJamMessages:
-    #         #     # light red
-    #         #     print("lr")
-    #         #     # return ['background-color: #f08080' if is_color else '' for v in curr_history]
+   
     print(":: curr_history :: \n",curr_history)
     delta = curr_history
+    curr_history['is_dark_orange'] = False
+    curr_history['is_dark_red'] = False
     # iterating for false list
     for each_tuple in delta.index.values:
         if each_tuple in False_list:
@@ -4583,16 +4564,22 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
                 print(is_color)
                 if is_color is True:
                     # didnt exist in prev report and is not jam
-                    delta = delta.assign(
-                        is_dark_orange=lambda dataframe: dataframe['B1-Equation'].map(
-                            lambda c: True if c not in listofJamMessages else False)
-                    )
+                    # delta = delta.assign(
+                    #     is_dark_orange=lambda dataframe: dataframe['B1-Equation'].map(
+                    #         lambda c: True if c not in listofJamMessages else False)
+                    # )
+                    curretRow = curr_history.loc[curr_history['AC SN'] == each_tuple[0]]
+                    isB1EquationExist3 = curretRow.isin(listofJamMessages).any().any()
+                    curr_history.loc[each_tuple[0] , "is_dark_orange"] = not isB1EquationExist3 #reversing bool
 
                     # didnt exist in prev report and is jam
-                    delta = delta.assign(
-                        is_dark_red=lambda dataframe: dataframe['B1-Equation'].map(
-                            lambda c: True if c in listofJamMessages else False)
-                    )
+                    curretRow = curr_history.loc[curr_history['AC SN'] == each_tuple[0]]
+                    isB1EquationExist4 = curretRow.isin(listofJamMessages).any().any()
+                    curr_history.loc[each_tuple[0] , "is_dark_red"] =  isB1EquationExist4
+                    # delta = delta.assign(
+                    #     is_dark_red=lambda dataframe: dataframe['B1-Equation'].map(
+                    #         lambda c: True if c in listofJamMessages else False)
+                    # )
     print(":: DELTA :: \n", delta)
     delta_json = delta.to_json(orient = 'records')
     return delta_json
