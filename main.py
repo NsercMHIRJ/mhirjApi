@@ -3493,33 +3493,16 @@ def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
     #print("table_highlight[0]: ",table_highlight[0])
     #print("index of th: ", table_highlight.index)
     #print("tuple of index: ", list(zip(table_highlight['AC SN'], table_highlight['B1-Equation'])))
-    print("Delta_list: ", delta_list)
-    print(":: Table highlight ::")
-    print((table_highlight))
+    # print("Delta_list: ", delta_list)
+    # print(":: Table highlight ::")
+    # print((table_highlight))
 
     print("index of th 2: ", table_highlight.index.values)
     for each_tuple in table_highlight.index.values:
         if each_tuple in delta_list:
             is_color = True
 
-            '''
-            for each_tuple in delta_list:
-                if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in each_tuple:
-                    print('is_color == True for ',each_tuple)
-            '''
-
-
-            """
-            is_color = False
-            # if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list:
-            for each in delta_list:
-                print(each)
-                # if (table_highlight["AC SN"] in delta_list and table_highlight["B1-Equation"] in delta_list):
-                if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in each:
-                    is_color = True
-                #else: is_color = False
-                print("is_col: ", is_color)
-        """
+           
             # already existed in prev report and is not jam
             if delta_list == True_list and table_highlight["B1-Equation"] not in Jam_list:
                 # light orange: 'background-color: #fde9d9'
@@ -3538,74 +3521,6 @@ def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
                 return [ table_highlight['is_dark_red'] == True if is_color else '' for v in table_highlight]
 
 
-"""
-def highlight_delta(table_highlight, delta_list, Jam_list=listofJamMessages):
-    '''highlights delta of two history reports'''
-    # check what in the new report exists in the prev. which of tuple(AC SN, B1) exists in the true list
-    print("Delta_list: ",delta_list)
-    print((table_highlight))
-    is_color = False
-    #if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in delta_list:
-    for each in delta_list:
-        print(each)
-        #if (table_highlight["AC SN"] in delta_list and table_highlight["B1-Equation"] in delta_list):
-        if (table_highlight["AC SN"], table_highlight["B1-Equation"]) in each:
-            is_color = True
-
-        # already existed in prev report and is not jam
-    if delta_list == True_list and table_highlight["B1-Equation"] not in Jam_list:
-        # light orange
-        # return ['background-color: #fde9d9' if is_color else '' for v in table_highlight]
-        #for v in table_highlight:
-        if is_color is True:
-            #table_highlight = table_highlight.assign(is_light_orange=True)
-            table_highlight['is_light_orange'] = True
-        else:
-            #table_highlight = table_highlight.assign(is_light_orange=False)
-            table_highlight['is_light_orange'] = False
-    # didnt exist in prev report and is not jam
-    elif delta_list == False_list and table_highlight["B1-Equation"] not in Jam_list:
-        # dark orange
-        # return ['background-color: #fabf8f' if is_color else '' for v in table_highlight]
-        #for v in table_highlight:
-        if is_color is True:
-            #table_highlight = table_highlight.assign(is_dark_orange=True)
-            table_highlight['is_dark_orange'] = True
-        else:
-            #table_highlight = table_highlight.assign(is_dark_orange=False)
-            table_highlight['is_dark_orange'] = False
-    # already existed in prev report and is jam
-    elif delta_list == True_list and table_highlight["B1-Equation"] in Jam_list:
-        # light red
-        # return ['background-color: #f08080' if is_color else '' for v in table_highlight]
-        #for v in table_highlight:
-        if is_color is True:
-            #table_highlight = table_highlight.assign(is_light_red=True)
-            table_highlight['is_light_red'] = True
-        else:
-            #table_highlight = table_highlight.assign(is_light_red=False)
-            table_highlight['is_light_red'] = False
-    # didnt exist in prev report and is jam
-    elif delta_list == False_list and table_highlight["B1-Equation"] in Jam_list:
-        # dark red #ff342e
-        # return ['background-color: #ff342e' if is_color else '' for v in table_highlight]
-        #for v in table_highlight:
-        if is_color is True:
-            #table_highlight = table_highlight.assign(is_dark_red=True)
-            table_highlight['is_dark_red'] = True
-        else:
-            #table_highlight = table_highlight.assign(is_dark_red=False)
-            table_highlight['is_dark_red'] = False
-    print(table_highlight)
-    return table_highlight
-"""
-"""
-    OutputTableHistory = OutputTableHistory.assign(
-        is_jam=lambda dataframe: dataframe['B1-Equation'].map(lambda c: True if c in listofJamMessages else False)
-    )
-
-table_highlight = table_highlight.assign( is_dark_red = lambda dataframe: dataframe[])
-"""
 
 
 @app.post(
@@ -3613,16 +3528,14 @@ table_highlight = table_highlight.assign( is_dark_red = lambda dataframe: datafr
 async def generateDeltaReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int,
                               ata: str, exclude_EqID: str, airline_operator: str, include_current_message: int,flag,
                               prev_fromDate: str, prev_toDate: str, curr_fromDate: str, curr_toDate: str):
-    print("prev dates: ", prev_fromDate, " - ", prev_toDate)
-    print("curr dates: ", curr_fromDate, " - ", curr_toDate)
+    
     flag=0
     ## Previous dates computation
     if not (prev_fromDate is None and prev_toDate is None):
         MDCdataDF = connect_database_MDCdata(ata, exclude_EqID, airline_operator, include_current_message,
                                              prev_fromDate, prev_toDate)
 
-        print(":: MDC DF PREV ::")
-        print(MDCdataDF)
+       
 
         # Date formatting
         MDCdataDF["DateAndTime"] = pd.to_datetime(MDCdataDF["DateAndTime"])
@@ -4045,7 +3958,7 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
             all_jam_messages = connect_to_fetch_all_jam_messages()
             for each_jam_message in all_jam_messages['Jam_Message']:
                 listofJamMessages.append(each_jam_message)
-            print(listofJamMessages)
+            # print(listofJamMessages)
 
             # HIGHLIGHT function starts here
             OutputTableHistory = OutputTableHistory.assign(
@@ -4062,8 +3975,8 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
         MDCdataDF = connect_database_MDCdata(ata, exclude_EqID, airline_operator, include_current_message,
                                              curr_fromDate, curr_toDate)
 
-        print(":: MDC DF CURR ::")
-        print(MDCdataDF)
+        # print(":: MDC DF CURR ::")
+        # print(MDCdataDF)
 
         # Date formatting
         MDCdataDF["DateAndTime"] = pd.to_datetime(MDCdataDF["DateAndTime"])
@@ -4486,22 +4399,22 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
             all_jam_messages = connect_to_fetch_all_jam_messages()
             for each_jam_message in all_jam_messages['Jam_Message']:
                 listofJamMessages.append(each_jam_message)
-            print(listofJamMessages)
+            # print(listofJamMessages)
 
             # HIGHLIGHT function starts here
             OutputTableHistory = OutputTableHistory.assign(
                 is_jam=lambda dataframe: dataframe['B1-Equation'].map(
                     lambda c: True if c in listofJamMessages else False)
             )
-            print(OutputTableHistory)
+            # print(OutputTableHistory)
             curr_history = OutputTableHistory
             # OutputTableHistory_json = OutputTableHistory.to_json(orient='records')
             # return OutputTableHistory_json
 
     # define lists, does the message in the new report exist in the previous or not
     True_list, False_list = create_delta_lists(prev_history, curr_history)
-    print(":: TRUE LIST :: ", True_list)
-    print(":: FALSE LIST :: ", False_list)
+    # print(":: TRUE LIST :: ", True_list)
+    # print(":: FALSE LIST :: ", False_list)
     curr_history.set_index(["AC SN", "B1-Equation"], drop=False, inplace=True)
     prev_history.set_index(["AC SN", "B1-Equation"], drop=False, inplace=True)
     # grab only what exists in the new report from the old report
@@ -4514,8 +4427,7 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
     curr_history.sort_index(inplace=True)
     prev_history_nums.sort_index(inplace=True)
 
-    print(prev_history_nums)
-
+   
     # delta = highlight_delta(curr_history, True_list)
     # delta_1 = highlight_delta(delta, False_list)
 
@@ -4523,25 +4435,24 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
     # check what in the new report exists in the prev. which of tuple(AC SN, B1) exists in the true list
     curr_history['is_light_orange'] = False
     curr_history['is_light_red'] = False
-    print("my trui list",True_list)
+   
     for each_tuple in curr_history.index.values:
-        print("each tuple",each_tuple)
+       
         if each_tuple in True_list:
-            # print('if is true :')
+            
             is_color = True
           
              
             curretRow = curr_history.loc[curr_history['AC SN'] == each_tuple[0]]
-            print('--current row----')
-            print(curretRow)
+           
             isB1EquationExist = curretRow.isin(listofJamMessages).any().any()
             curr_history.loc[each_tuple[0] , "is_light_orange"] = not isB1EquationExist #reversing bool
            
 
             # already existed in prev report and is jam
           
-            # isB1EquationExist2 = curretRow.isin(listofJamMessages).any().any()
-            curr_history.loc[each_tuple[0] , "is_light_red"] =  isB1EquationExist
+            isB1EquationExist2 = curretRow.isin(listofJamMessages).any().any()
+            curr_history.loc[each_tuple[0] , "is_light_red"] =  isB1EquationExist2
 
             # curr_history = curr_history.assign(
             #     is_light_red=lambda dataframe: dataframe['B1-Equation'].map(
@@ -4552,7 +4463,7 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
             print('else :')
 
    
-    print(":: curr_history :: \n",curr_history)
+    # print(":: curr_history :: \n",curr_history)
     delta = curr_history
     curr_history['is_dark_orange'] = False
     curr_history['is_dark_red'] = False
@@ -4561,7 +4472,7 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
         if each_tuple in False_list:
             is_color = True
             for each in delta:
-                print(is_color)
+                
                 if is_color is True:
                     # didnt exist in prev report and is not jam
                     # delta = delta.assign(
@@ -4573,7 +4484,7 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
                     curr_history.loc[each_tuple[0] , "is_dark_orange"] = not isB1EquationExist3 #reversing bool
 
                     # didnt exist in prev report and is jam
-                    curretRow = curr_history.loc[curr_history['AC SN'] == each_tuple[0]]
+                    # curretRow = curr_history.loc[curr_history['AC SN'] == each_tuple[0]]
                     isB1EquationExist4 = curretRow.isin(listofJamMessages).any().any()
                     curr_history.loc[each_tuple[0] , "is_dark_red"] =  isB1EquationExist4
                     # delta = delta.assign(
