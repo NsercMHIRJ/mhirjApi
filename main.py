@@ -4553,6 +4553,6 @@ async def get_mdcRawData(from_date:str, to_date:str):
     mdcRaw_df_json =  mdcRaw_df.to_json(orient='records')
     return  {"total":str(total),"data":mdcRaw_df_json}    
 
-# @app.get("/api/getMDCFileUploadStatus")
-# async def getMDCFileUploadStatus():
-#     return getFileUploadStatusPercentage() 
+@app.get("/api/getMDCFileUploadStatus")
+async def getMDCFileUploadStatus():
+    return getFileUploadStatusPercentage() 
