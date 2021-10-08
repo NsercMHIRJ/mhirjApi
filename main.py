@@ -3167,8 +3167,8 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
     #ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
     sql =""
 
-    #sql += "SELECT * FROM dbo.MDC_PM_Correlated WHERE CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
-    sql += "select distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, Substring(ATA, 1,2) ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3 AND CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
+    sql += "select distinct [MaintTransID],[DateAndTime],[Failure_Flag],[MRB],[SquawkSource],Substring(ATA, 1,2) ATA,[Discrepancy],[CorrectiveAction] from [dbo].[MDC_PM_Correlated] where CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
+    #sql += "select distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, Substring(ATA, 1,2) ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3 AND CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
 
     if equation_id!="":
         #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
@@ -3201,12 +3201,20 @@ async def get_CorelationData(fromDate: str, toDate: str, equation_id:Optional[st
 
 def connect_database_for_corelation_pid(p_id):
     
-    sql = """SELECT [mdc_ID], [EQ_ID], [aircraftno], [ATA_Description], [LRU], [DateAndTime], [MDC_Date], 
-	[MDC_MESSAGE], [EQ_DESCRIPTION], [CAS], [LRU_CODE], [LRU_NAME], [FAULT_LOGGED], [MDC_ATA], 
-	[mdc_ata_main], [mdc_ata_sub], [Status], [mdc_type]
-    FROM [dbo].[sample_corelation]
-    WHERE p_id = (%s)
-    ORDER BY MDC_Date""" %(p_id)
+    sql = """SELECT 
+	[Aircraft_tail_No],
+	[EQ_ID],
+	[aircraftno],
+	[ATA_Description],
+	[LRU],
+	[CAS],
+	[MDC_MESSAGE],
+	[EQ_DESCRIPTION],
+	[ATA_Main],
+	[ATA_Sub]
+    FROM [dbo].[MDC_PM_Correlated] 
+    WHERE [MaintTransID] = %s
+    """ %(p_id)
 
     print(sql)
 
@@ -3228,7 +3236,7 @@ async def get_CorelationDataPID(p_id: str):
     corelation_df_json = corelation_df.to_json(orient='records')
     return corelation_df_json
 
-def connect_database_for_corelation_pid(p_id):
+def connect_database_for_corelation_pid2(p_id):
     sql = """SELECT [mdc_ID], [EQ_ID], [aircraftno], [ATA_Description], [LRU], [DateAndTime], [MDC_Date], 
 	[MDC_MESSAGE], [EQ_DESCRIPTION], [CAS], [LRU_CODE], [LRU_NAME], [FAULT_LOGGED], [MDC_ATA], 
 	[mdc_ata_main], [mdc_ata_sub], [Status], [mdc_type]
