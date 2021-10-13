@@ -3033,12 +3033,32 @@ def connect_db_MDCdata_chartb(from_dt, to_dt):
         print("Couldn't connect to Server")
         print("Error message:- " + str(err))
 
+#with ata chartb
+def connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt):
+    sql = "SELECT * FROM Airline_MDC_Data WHERE ATA_Main IN " + str(ata) +" and  DateAndTime BETWEEN '" + from_dt + "' AND '" + to_dt + "'"
+    column_names = ["Aircraft", "Tail", "Flight Leg No",
+                    "ATA Main", "ATA Sub", "ATA", "ATA Description", "LRU",
+                    "DateAndTime", "MDC Message", "Status", "Flight Phase", "Type",
+                    "Intermittent", "Equation ID", "Source", "Diagnostic Data",
+                    "Data Used to Determine Msg", "ID", "Flight", "airline_id", "aircraftno"]
+    print(sql)
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        MDCdataDF_chartb = pd.read_sql(sql, conn)
+        MDCdataDF_chartb.columns = column_names
+        conn.close()
+        return MDCdataDF_chartb
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
 # for reference -> http://localhost:8000/Landing_Chart_B/15/11-11-2020/11-17-2020
-@app.post("/api/Landing_Chart_B/{top_n}/{from_dt}/{to_dt}")
-async def get_Chart_B(top_n: int,from_dt: str, to_dt: str):
+@app.post("/api/Landing_Chart_B/{ata}/{top_n}/{from_dt}/{to_dt}")
+async def get_Chart_B(ata:str,top_n: int,from_dt: str, to_dt: str):
     try:
         Topvalues2 = top_n
-        MDCdataDF = connect_db_MDCdata_chartb(from_dt, to_dt)
+        MDCdataDF = connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt)
         AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail"]].drop_duplicates(ignore_index= True) # unique pairs of AC SN and Tail# for use in analysis
         AircraftTailPairDF.columns = ["AC SN","Tail"] # re naming the columns to match History/Daily analysis output
         chartADF = pd.merge(left = MDCdataDF[["Aircraft","ATA Main", "Equation ID"]], right = AircraftTailPairDF, left_on="Aircraft", right_on="AC SN")
@@ -3057,13 +3077,14 @@ async def get_Chart_B(top_n: int,from_dt: str, to_dt: str):
         TransposedMessageCountbyAircraftATA["Sum"] = TransposedMessageCountbyAircraftATA.sum(axis=1)
 
         # sort the dataframe by the values of sum, and from the topvalues2 the user chooses
-        TransposedMessageCountbyAircraftATA = TransposedMessageCountbyAircraftATA.sort_values("Sum",ascending=False).tail(Topvalues2)
+        TransposedMessageCountbyAircraftATA = TransposedMessageCountbyAircraftATA.sort_values("Sum").tail(Topvalues2)
 
         # create a final dataframe for plotting without the new column created before
         TransposedMessageCountbyAircraftATAfinalPLOT = TransposedMessageCountbyAircraftATA.drop(["Sum"], axis=1)
-
-        totals = TransposedMessageCountbyAircraftATA["Sum"]
-        print("total in landing chart B is : ",totals)
+        print('TransposedMessageCountbyAircraftATAfinalPLOT colums : ',TransposedMessageCountbyAircraftATAfinalPLOT.columns)
+        #totals = TransposedMessageCountbyAircraftATA["Sum"]
+        print("total in landing chart B is : ",TransposedMessageCountbyAircraftATAfinalPLOT)
+        TransposedMessageCountbyAircraftATAfinalPLOT = TransposedMessageCountbyAircraftATAfinalPLOT.sort_values(by='ATA Main',ascending=False)
         chart_b_df_json = TransposedMessageCountbyAircraftATAfinalPLOT.to_json(orient='index')
 	    #return chart_b_df_json
         # #image settings
