@@ -3035,7 +3035,7 @@ def connect_db_MDCdata_chartb(from_dt, to_dt):
 
 #with ata chartb
 def connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt):
-    sql = "SELECT * FROM Airline_MDC_Data WHERE ATA_Main IN " + str(ata) +" and  DateAndTime BETWEEN '" + from_dt + "' AND '" + to_dt + "'"
+    sql = "SELECT * FROM Airline_MDC_Data WHERE ATA_Main IN " + str(ata) +" and  DateAndTime BETWEEN '" + from_dt + " 00:00:00 ' AND '" + to_dt + " 23:59:59 '"
     column_names = ["Aircraft", "Tail", "Flight Leg No",
                     "ATA Main", "ATA Sub", "ATA", "ATA Description", "LRU",
                     "DateAndTime", "MDC Message", "Status", "Flight Phase", "Type",
@@ -3078,13 +3078,14 @@ async def get_Chart_B(ata:str,top_n: int,from_dt: str, to_dt: str):
 
         # sort the dataframe by the values of sum, and from the topvalues2 the user chooses
         TransposedMessageCountbyAircraftATA = TransposedMessageCountbyAircraftATA.sort_values("Sum").tail(Topvalues2)
+        TransposedMessageCountbyAircraftATA = TransposedMessageCountbyAircraftATA.sort_values("Sum", ascending=False)
 
         # create a final dataframe for plotting without the new column created before
         TransposedMessageCountbyAircraftATAfinalPLOT = TransposedMessageCountbyAircraftATA.drop(["Sum"], axis=1)
         print('TransposedMessageCountbyAircraftATAfinalPLOT colums : ',TransposedMessageCountbyAircraftATAfinalPLOT.columns)
         #totals = TransposedMessageCountbyAircraftATA["Sum"]
         print("total in landing chart B is : ",TransposedMessageCountbyAircraftATAfinalPLOT)
-        TransposedMessageCountbyAircraftATAfinalPLOT = TransposedMessageCountbyAircraftATAfinalPLOT.sort_values(by='ATA Main',ascending=False)
+        # TransposedMessageCountbyAircraftATAfinalPLOT = TransposedMessageCountbyAircraftATAfinalPLOT.sort_values(by='ATA Main',ascending=False)
         chart_b_df_json = TransposedMessageCountbyAircraftATAfinalPLOT.to_json(orient='index')
 	    #return chart_b_df_json
         # #image settings
