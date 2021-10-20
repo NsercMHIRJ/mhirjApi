@@ -3,7 +3,6 @@ import json
 import pyodbc
 import os
 import urllib
-import pandas as pd
 import csv
 import codecs
 from io import StringIO

@@ -1,5 +1,6 @@
 # Importing libraries to the project
 #!/usr/bin/bash
+from GenerateReport.history import historyReport
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -23,7 +24,7 @@ from typing import Optional
 templates = Jinja2Templates(directory="templates")
 import os
 import urllib
-from fastapi import FastAPI, File, UploadFile
+from fastapi import File, UploadFile
 from crud import *
 from pm_upload import *
 
@@ -260,7 +261,13 @@ async def get_MDCRawData(ATAMain_list:str, exclude_EqID_list:str, airline_operat
     MDCdataDF_json = c.to_json(orient='records')
     return MDCdataDF_json
 
+@app.post("/api/generateReport/{analysisType}/{occurences}/{legs}/{intermittent}/{consecutiveDays}/{ata}/{exclude_EqID}/{airline_operator}/{include_current_message}/{fromDate}/{toDate}")
+async def generateHistoryReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str):
+    print("Request Data: " + analysisType, occurences, legs, intermittent, consecutiveDays, ata, exclude_EqID, airline_operator, include_current_message, fromDate, toDate)
+    if analysisType.lower() == "history":
+        respObj = historyReport(occurences, legs, intermittent, consecutiveDays, ata, exclude_EqID, airline_operator, include_current_message, fromDate , toDate)
 
+    return respObj
 #for Daily Report: value of consecutiveDays = 0 in URL -> for reference!!       ('32','22')/('B1-007553', 'B1-246748')/skw/1/2020-11-11/2020-11-12
 @app.post("/api/GenerateReport/{analysisType}/{occurences}/{legs}/{intermittent}/{consecutiveDays}/{ata}/{exclude_EqID}/{airline_operator}/{include_current_message}/{fromDate}/{toDate}")
 async def generateReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str):
