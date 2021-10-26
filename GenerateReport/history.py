@@ -160,10 +160,7 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
 
                 if ((flags_2in5 == equation).any() and check_2in5(dates)): 
                     flags_array.at[equation, aircraft] = flags_array.at[equation, aircraft] + str(equation) + " occurred at least twice in 5 days. "
-                print("Equ ", equation)
-                print('items ', MDCMessagesDF["EICAS"][MDCMessagesDF["Equation_ID"] == equation])
-                print("MDCMessagesDF ",MDCMessagesDF["EICAS"])
-                print('eqi ', MDCMessagesDF["Equation_ID"])
+               
                 #populating the final array (Table)
                 MAINtable_array_temp[0,0] = aircraft # SN
                 try:
@@ -204,13 +201,14 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
                 MAINtable_array_temp[0,12] = dates.min()
                 MAINtable_array_temp[0,13] = dates.max()
                 MAINtable_array_temp[0,14] = str(flags_array.at[equation, aircraft])
-
-                print('mdc ', MDCMessagesDF)
                 #if the input is empty set the priority to 4
-                if MDCMessagesDF["Priority_"][MDCMessagesDF["Equation_ID"] == equation].item() == 0:
+                try:
+                    if MDCMessagesDF["Priority_"][MDCMessagesDF["Equation_ID"] == equation].item() == 0:
+                        MAINtable_array_temp[0,15] = 4
+                    else:
+                        MAINtable_array_temp[0,15] = MDCMessagesDF["Priority_"][MDCMessagesDF["Equation_ID"] == equation].item()
+                except:
                     MAINtable_array_temp[0,15] = 4
-                else:
-                    MAINtable_array_temp[0,15] = MDCMessagesDF["Priority_"][MDCMessagesDF["Equation_ID"] == equation].item()
 
                 #For B1-006424 & B1-006430 Could MDC Trend tool assign Priority 3 if logged on A/C below 10340, 15317. Priority 1 if logged on 10340, 15317, 19001 and up
                 if equation == "B1-006424" or equation == "B1-006430":
@@ -226,29 +224,39 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
                         MAINtable_array_temp[0,15] = 1
 
                 #check content of "MEL or No-Dispatch"
-                if MDCMessagesDF["MEL_or_No_Dispatch"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                try:
+                    if MDCMessagesDF["MEL_or_No_Dispatch"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                        MAINtable_array_temp[0,17] = ""
+                    else:
+                        MAINtable_array_temp[0,17] = MDCMessagesDF["MEL_or_No_Dispatch"][MDCMessagesDF["Equation_ID"] == equation].item()
+                except:
                     MAINtable_array_temp[0,17] = ""
-                else:
-                    MAINtable_array_temp[0,17] = MDCMessagesDF["MEL_or_No_Dispatch"][MDCMessagesDF["Equation_ID"] == equation].item()
-
                 #check content of "MHIRJ Input"
-                if MDCMessagesDF["MHIRJ_ISE_inputs"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                try:
+                    if MDCMessagesDF["MHIRJ_ISE_inputs"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                        MAINtable_array_temp[0,18] = ""
+                    else:
+                        MAINtable_array_temp[0,18] = MDCMessagesDF["MHIRJ_ISE_inputs"][MDCMessagesDF["Equation_ID"] == equation].item()
+
+                except:
                     MAINtable_array_temp[0,18] = ""
-                else:
-                    MAINtable_array_temp[0,18] = MDCMessagesDF["MHIRJ_ISE_inputs"][MDCMessagesDF["Equation_ID"] == equation].item()
                 
                 #check the content of MHIRJ ISE recommendation and add to array    
-                if MDCMessagesDF["MHIRJ_ISE_Recommended_Action"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                try:
+                    if MDCMessagesDF["MHIRJ_ISE_Recommended_Action"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                        MAINtable_array_temp[0,19] = ""
+                    else:
+                        MAINtable_array_temp[0,19] = MDCMessagesDF["MHIRJ_ISE_Recommended_Action"][MDCMessagesDF["Equation_ID"] == equation].item()
+                except:
                     MAINtable_array_temp[0,19] = ""
-                else:
-                    MAINtable_array_temp[0,19] = MDCMessagesDF["MHIRJ_ISE_Recommended_Action"][MDCMessagesDF["Equation_ID"] == equation].item()
-
                 #check content of "additional"
-                if MDCMessagesDF["Additional_Comments"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                try:
+                    if MDCMessagesDF["Additional_Comments"][MDCMessagesDF["Equation_ID"] == equation].item() == "0":
+                        MAINtable_array_temp[0,20] = ""
+                    else:
+                        MAINtable_array_temp[0,20] = MDCMessagesDF["Additional_Comments"][MDCMessagesDF["Equation_ID"] == equation].item()
+                except:
                     MAINtable_array_temp[0,20] = ""
-                else:
-                    MAINtable_array_temp[0,20] = MDCMessagesDF["Additional_Comments"][MDCMessagesDF["Equation_ID"] == equation].item()
-
                 #Check for the equation in the Top Messages sheet
                 TopCounter = 0
                 Top_LastRow = TopMessagesArray.shape[0]
