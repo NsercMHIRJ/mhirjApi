@@ -3058,6 +3058,9 @@ def connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt):
 async def get_Chart_B(ata:str,top_n: int,from_dt: str, to_dt: str):
     try:
         Topvalues2 = top_n
+        if Topvalues2>50:
+            Topvalues2=50
+        
         MDCdataDF = connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt)
         AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail"]].drop_duplicates(ignore_index= True) # unique pairs of AC SN and Tail# for use in analysis
         AircraftTailPairDF.columns = ["AC SN","Tail"] # re naming the columns to match History/Daily analysis output
