@@ -4602,3 +4602,24 @@ async def get_mdcRawData(from_date:str, to_date:str):
 @app.get("/api/getMDCFileUploadStatus")
 async def getMDCFileUploadStatus():
     return getFileUploadStatusPercentage() 
+
+def connect_database_mdc_message_input(eq_id):
+    sql = "SELECT * from [dbo].[MDCMessagesInputs_CSV_UPLOAD] c WHERE c.Equation_ID='" + eq_id + "' "
+
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+                              
+        print(sql)
+        mdcRaw_df = pd.read_sql(sql, conn)
+        #MDCdataDF.columns = column_names
+        return mdcRaw_df
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+@app.post("/api/list_mdc_messages_input/{eq_id}")
+async def get_mdcMessageInput(eq_id:str):
+    mdcRaw_df = connect_database_mdc_message_input(eq_id)
+    mdcRaw_df_json =  mdcRaw_df.to_json(orient='records')
+    return  mdcRaw_df_json
