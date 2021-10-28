@@ -3189,14 +3189,19 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
     #ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
     sql =""
 
-    sql += "select distinct [MaintTransID],[DateAndTime],[Failure_Flag],[MRB],[SquawkSource],Substring(ATA, 1,2) ATA,[Discrepancy],[CorrectiveAction] from [dbo].[MDC_PM_Correlated] where CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
+    sql += "select distinct [MaintTransID],[EQ_ID], [DateAndTime],[Failure_Flag],[MRB],[SquawkSource],Substring(ATA, 1,2) ATA,[Discrepancy],[CorrectiveAction] from [dbo].[MDC_PM_Correlated] where CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
     #sql += "select distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, Substring(ATA, 1,2) ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3 AND CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
-
+    print("len of eq_id",equation_id)
     if equation_id!="":
-        #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
-        equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").split(",")))
-        equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
-        sql += "  AND EQ_ID IN " + equation_id
+        if ',' in equation_id:
+            equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").split(",")))
+            equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
+            sql += "  AND EQ_ID IN " + equation_id
+        else : 
+            #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
+            # if len(equation_id) >= 14:
+            #equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
+            sql += "  AND EQ_ID = " + equation_id
     if "ALL" not in ata :
         if ata!="":
             sql += "  AND Substring(ATA, 1,2) IN " + ata
