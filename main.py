@@ -3068,6 +3068,9 @@ def connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt):
 async def get_Chart_B(ata:str,top_n: int,from_dt: str, to_dt: str):
     try:
         Topvalues2 = top_n
+        if Topvalues2>50:
+            Topvalues2=50
+        
         MDCdataDF = connect_db_MDCdata_chartb_ata(ata,from_dt, to_dt)
         AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail"]].drop_duplicates(ignore_index= True) # unique pairs of AC SN and Tail# for use in analysis
         AircraftTailPairDF.columns = ["AC SN","Tail"] # re naming the columns to match History/Daily analysis output
@@ -3199,14 +3202,19 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
     #ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
     sql =""
 
-    sql += "select distinct [MaintTransID],[DateAndTime],[Failure_Flag],[MRB],[SquawkSource],Substring(ATA, 1,2) ATA,[Discrepancy],[CorrectiveAction] from [dbo].[MDC_PM_Correlated] where CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
+    sql += "select distinct [MaintTransID],[EQ_ID], [DateAndTime],[Failure_Flag],[MRB],[SquawkSource],Substring(ATA, 1,2) ATA,[Discrepancy],[CorrectiveAction] from [dbo].[MDC_PM_Correlated] where CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
     #sql += "select distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, Substring(ATA, 1,2) ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3 AND CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
-
+    print("len of eq_id",equation_id)
     if equation_id!="":
-        #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
-        equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").split(",")))
-        equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
-        sql += "  AND EQ_ID IN " + equation_id
+        if ',' in equation_id:
+            equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").split(",")))
+            equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
+            sql += "  AND EQ_ID IN " + equation_id
+        else : 
+            #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
+            # if len(equation_id) >= 14:
+            #equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
+            sql += "  AND EQ_ID = " + equation_id
     if "ALL" not in ata :
         if ata!="":
             sql += "  AND Substring(ATA, 1,2) IN " + ata
@@ -4612,3 +4620,24 @@ async def get_mdcRawData(from_date:str, to_date:str):
 @app.get("/api/getMDCFileUploadStatus")
 async def getMDCFileUploadStatus():
     return getFileUploadStatusPercentage() 
+
+def connect_database_mdc_message_input(eq_id):
+    sql = "SELECT * from [dbo].[MDCMessagesInputs_CSV_UPLOAD] c WHERE c.Equation_ID='" + eq_id + "' "
+
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+                              
+        print(sql)
+        mdcRaw_df = pd.read_sql(sql, conn)
+        #MDCdataDF.columns = column_names
+        return mdcRaw_df
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+@app.post("/api/list_mdc_messages_input/{eq_id}")
+async def get_mdcMessageInput(eq_id:str):
+    mdcRaw_df = connect_database_mdc_message_input(eq_id)
+    mdcRaw_df_json =  mdcRaw_df.to_json(orient='records')
+    return  mdcRaw_df_json
