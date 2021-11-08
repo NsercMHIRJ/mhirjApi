@@ -1,6 +1,7 @@
 # Importing libraries to the project
 #!/usr/bin/bash
 from GenerateReport.history import historyReport
+from Charts.chart3 import chart3Report
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -2752,29 +2753,9 @@ async def get_ChartwoData(top_values:int, ata:str, fromDate: str , toDate: str):
     return chart2_sql_df_json
 
 
-## Chart 3
-def connect_database_for_chart3(aircraft_no, equation_id, is_flight_phase_enabled, from_dt, to_dt):
-    if is_flight_phase_enabled == 0: # Flight phase is NOT enabled
-        sql = "SELECT COUNT(*) AS OccurencesPerDay, cast(DateAndTime as DATE) AS Dates from Airline_MDC_Data WHERE Equation_ID='"+equation_id+"' AND aircraftno = '"+str(aircraft_no)+"' AND Flight_Phase IS NOT NULL AND DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"' GROUP BY cast(DateAndTime as DATE)"
-    elif is_flight_phase_enabled == 1:
-        sql = "SELECT COUNT(*) AS OccurencesPerDay, cast(DateAndTime as DATE) AS Dates from Airline_MDC_Data WHERE Equation_ID='"+equation_id+"' AND aircraftno = '"+str(aircraft_no)+"' AND Flight_Phase IS NULL AND DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"' GROUP BY cast(DateAndTime as DATE)"
-    print(sql)
-    try:
-        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
-                              user=db_username, password=db_password)
-        chart3_sql_df = pd.read_sql(sql, conn)
-        # MDCdataDF.columns = column_names
-        conn.close()
-        return chart3_sql_df
-    except pyodbc.Error as err:
-        print("Couldn't connect to Server")
-        print("Error message:- " + str(err))
-
 @app.post("/api/chart_three/{aircraft_no}/{equation_id}/{is_flight_phase_enabled}/{fromDate}/{toDate}")
 async def get_CharThreeData(aircraft_no:int, equation_id:str, is_flight_phase_enabled:int, fromDate: str , toDate: str):
-    chart3_sql_df = connect_database_for_chart3(aircraft_no, equation_id, is_flight_phase_enabled, fromDate, toDate)
-    chart3_sql_df_json = chart3_sql_df.to_json(orient='records')
-    return chart3_sql_df_json
+    return chart3Report(aircraft_no, equation_id, is_flight_phase_enabled, fromDate, toDate)
 
 
 ## Chart 5
