@@ -1,5 +1,5 @@
 
-from Charts.helper import connect_database_for_chart3
+from Charts.helper import connect_database_for_charts
 import pandas as pd
 import numpy as np
 import re
@@ -7,7 +7,7 @@ import json
 
 def chart3Report(aircraft_no, equation_id, CurrentFlightPhaseEnabled, fromDate, toDate):
     print(aircraft_no, equation_id, CurrentFlightPhaseEnabled, fromDate, toDate)
-    MDCdataDF = connect_database_for_chart3(aircraft_no, equation_id, CurrentFlightPhaseEnabled, fromDate, toDate)
+    MDCdataDF = connect_database_for_charts(aircraft_no, equation_id, CurrentFlightPhaseEnabled, fromDate, toDate)
     MDCdataDF["DateAndTime"] = pd.to_datetime(MDCdataDF["DateAndTime"])
 
     if CurrentFlightPhaseEnabled == 1: #Show all, current and history
@@ -23,7 +23,6 @@ def chart3Report(aircraft_no, equation_id, CurrentFlightPhaseEnabled, fromDate, 
 
     removeParanthesisRegex = r"[()]"
     equation_ids = re.sub(removeParanthesisRegex, '', equation_id)
-    # DatesfoundinMDCdata = counts.loc[('AC'+str(aircraft_no), equation_id)].resample('D')["Counts"].sum().index
     valuesfoundinMDCdata = ''
     unavailableEquationIds = []
     for equation in equation_ids.split(','):
@@ -33,9 +32,10 @@ def chart3Report(aircraft_no, equation_id, CurrentFlightPhaseEnabled, fromDate, 
         except:
             unavailableEquationIds.append(equation)
 
-    if len(unavailableEquationIds) != 0:
+    if len(unavailableEquationIds) != 0 and not valuesfoundinMDCdata:
         valuesfoundinMDCdata = json.dumps({'UnavailableEquationIds': unavailableEquationIds})
 
+    print(valuesfoundinMDCdata)
     return valuesfoundinMDCdata
 
 
