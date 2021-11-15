@@ -48,7 +48,7 @@ def fetch_all_eqids(from_dt, to_dt):
 #         print("Error message:- " + str(err))
 
 
-def connect_database_for_chart3(aircraft_no, equation_id, CurrentFlightPhaseEnabled, from_dt, to_dt):
+def connect_database_for_charts(aircraft_no, equation_id, CurrentFlightPhaseEnabled, from_dt, to_dt):
     conn = pyodbc.connect(driver=App().db_driver, host=App().hostname, database=App().db_name,
                               user=App().db_username, password=App().db_password)
     if equation_id == 'NONE':

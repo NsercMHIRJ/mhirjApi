@@ -11,12 +11,12 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
         MDCdataDF["Flight Phase"].fillna(False, inplace= True) # NuCell values preprocessing for currentflightphase
         MDCdataDF["Intermittent"].fillna(value= 0.0, inplace= True) # Null values preprocessing for currentflightphase
         MDCdataDF["Intermittent"].replace(to_replace= ">", value= "9", inplace=True) # > represents greater than 8 Intermittent values
-        try:                      
-            #print("data in intermittent ",MDCdataDF["Intermittent"])            
-            MDCdataDF["Intermittent"] = int(MDCdataDF["Intermittent"]) # cast type to int
-        except:
-            #print("data in intermittent exec",MDCdataDF["Intermittent"])            
-            MDCdataDF["Intermittent"] = 9
+        # try:                      
+        #     print("data in intermittent ",MDCdataDF["Intermittent"])            
+        #     MDCdataDF["Intermittent"] = int(MDCdataDF["Intermittent"]) # cast type to int
+        # except:
+        #     #print("data in intermittent exec",MDCdataDF["Intermittent"])            
+        #     MDCdataDF["Intermittent"] = 9
 
         MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
         MDCdataDF.fillna(value= " ", inplace= True) # replacing all REMAINING null values to a blank string
@@ -25,9 +25,9 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
         AircraftTailPairDF = MDCdataDF[["Aircraft", "Tail#"]].drop_duplicates(ignore_index= True) # unique pairs of AC SN and Tail# for use in analysis
         AircraftTailPairDF.columns = ["AC SN","Tail#"] # re naming the columns to match History/Daily analysis output
 
-        DatesinData = MDCdataDF["DateAndTime"].dt.date.unique() # these are the dates in the data in Datetime format. 
-        NumberofDays = len(MDCdataDF["DateAndTime"].dt.date.unique()) # to pass into Daily analysis number of days in data
-        latestDay = str(MDCdataDF.loc[0, "DateAndTime"].date()) # to pass into history analysis MDCdataDF["DateAndTime"].sort_values().iloc[-1]
+        # DatesinData = MDCdataDF["DateAndTime"].dt.date.unique() # these are the dates in the data in Datetime format. 
+        # NumberofDays = len(MDCdataDF["DateAndTime"].dt.date.unique()) # to pass into Daily analysis number of days in data
+        # latestDay = str(MDCdataDF.loc[0, "DateAndTime"].date()) # to pass into history analysis MDCdataDF["DateAndTime"].sort_values().iloc[-1]
 
         MDCMessagesDF = connect_database_MDCmessagesInputs() # bring messages and inputs into a Dataframe
         TopMessagesDF = connect_database_TopMessagesSheet() # bring messages and inputs into a Dataframe

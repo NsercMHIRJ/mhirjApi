@@ -1,5 +1,6 @@
 # Importing libraries to the project
 #!/usr/bin/bash
+from Charts.chart5 import chart5Report
 from GenerateReport.history import historyReport
 from Charts.chart3 import chart3Report
 import numpy as np
@@ -2811,10 +2812,11 @@ def connect_database_for_chart5(aircraft_no, equation_id, is_flight_phase_enable
 
 @app.post("/api/chart_five/{aircraft_no}/{equation_id}/{is_flight_phase_enabled}/{fromDate}/{toDate}")
 async def get_CharFiveData(aircraft_no:int, equation_id:str, is_flight_phase_enabled:int, fromDate: str , toDate: str):
-    chart5_sql_df = connect_database_for_chart5(aircraft_no, equation_id, is_flight_phase_enabled, fromDate, toDate)
-    chart5_sql_df.replace({'>':0}, inplace=True) #To replace the error value '>' with 0 in Intermittent Column.
-    chart5_sql_df_json = chart5_sql_df.to_json(orient='records')
-    return chart5_sql_df_json
+    return chart5Report(aircraft_no, equation_id, is_flight_phase_enabled, fromDate, toDate)
+    # chart5_sql_df = connect_database_for_chart5(aircraft_no, equation_id, is_flight_phase_enabled, fromDate, toDate)
+    # chart5_sql_df.replace({'>':0}, inplace=True) #To replace the error value '>' with 0 in Intermittent Column.
+    # chart5_sql_df_json = chart5_sql_df.to_json(orient='records')
+    # return chart5_sql_df_json
 
 
 
