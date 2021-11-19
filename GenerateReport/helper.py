@@ -66,6 +66,8 @@ def connect_database_MDCdata(ata, excl_eqid, airline_operator, include_current_m
             else:
                 all_eqid_str += ")"
 
+    from_dt = from_dt + " 00:00:00"
+    to_dt = to_dt + " 23:59:59"
     # If we do not want to include current message -> exclude null flight phase and null intermittents
     if include_current_message == 0:    
         if ata == 'ALL' and excl_eqid == 'NONE':
