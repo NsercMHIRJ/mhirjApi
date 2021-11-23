@@ -3246,38 +3246,17 @@ def connect_database_for_corelation(from_dt, to_dt, equation_id, ata):
         print("Couldn't connect to Server")
         print("Error message:- " + str(err))
 
-@app.post("/api/corelation_new/{fromDate}/{toDate}")
-async def get_NewCorelation(fromDate: str, toDate: str, equation_id:Optional[str]="", tail_no:Optional[str]=""):
+@app.post("/api/corelation_new/{fromDate}/{toDate}/{equation_id}/{tail_no}")
+async def get_NewCorelation(fromDate: str, toDate: str, equation_id:str, tail_no:str):
     corelation_df = connect_database_for_corelation_new(fromDate, toDate, equation_id, tail_no)
     corelation_df_json = corelation_df.to_json(orient='records')
     return corelation_df_json
 
 
 def connect_database_for_corelation_new(from_dt, to_dt, equation_id, tail_no):
-    #equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
-    #if "ALL" not in ata:
-    #    ata = str(tuple(ata.replace(")", "").replace("(", "").replace("'", "").split(",")))
-
-    #equation_id = str(tuple(equation_id.replace(")","").replace("(","").replace("'","").split(",")))
-    #ata = str(tuple(ata.replace(")","").replace("(","").replace("'","").split(",")))
     sql =""
 
-    sql += "SELECT DISTINCT * FROM [dbo].[MDC_PM_Correlated] WHERE Aircraft_tail_No = '" + tail_no + "' AND CONVERT(date,DateAndTime) BETWEEN '" + from_dt + "'  AND '" + to_dt + "'"
-    #sql += "select distinct MaintTransID p_ID, Aircraft_tail_No, aircraftno, EQ_ID, EQ_DESCRIPTION, LRU,CAS, MDC_MESSAGE, Substring(ATA, 1,2) ATA, Discrepancy, CorrectiveAction, DateAndTime, Failure_Flag, SquawkSource from [dbo].[MDC_PM_Correlated] where Status = 3 AND CONVERT(date,DateAndTime) between '" + from_dt + "'  AND '" + to_dt + "'"
-    # print("len of eq_id",equation_id)
-    if equation_id!="":
-        if ',' in equation_id:
-            equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").split(",")))
-            equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
-            sql += "  AND EQ_ID IN " + equation_id
-        else : 
-            equation_id = str(tuple(equation_id.replace(")", "").replace("(", "").replace("'", "").split(",")))
-            if len(equation_id) >= 14:
-                equation_id = equation_id.replace(equation_id[len(equation_id)-2], '')
-            sql += "  AND EQ_ID = " + equation_id
-    # if "ALL" not in ata :
-    #     if ata!="":
-    #         sql += "  AND Substring(ATA, 1,2) IN " + ata
+    sql += "SELECT DISTINCT [MaintTransID],[DateAndTime],[Failure_Flag],[MRB],[SquawkSource],[Discrepancy],[CorrectiveAction] FROM [dbo].[MDC_PM_Correlated] WHERE Aircraft_tail_No = '" + tail_no + "' AND EQ_ID = '"+equation_id+"' AND CONVERT(date,DateAndTime) BETWEEN '" + from_dt + "'  AND '" + to_dt + "'"
     print(sql)
     try:
         conn = pyodbc.connect(driver=db_driver, host=hostname,
