@@ -3,11 +3,9 @@ import pyodbc
 import pandas as pd
 import datetime
 
-
-def isValidParams(occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str):
-    global conn 
-    conn = pyodbc.connect(driver=App().db_driver, host=App().hostname, database=App().db_name,
+conn = pyodbc.connect(driver=App().db_driver, host=App().hostname, database=App().db_name,
                               user=App().db_username, password=App().db_password)
+def isValidParams(occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str):
     return True
 
 
