@@ -80,7 +80,6 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
         b1message, aircraft = np.where(pd.notnull(total_occ_DF))
         # obtains the address to the values to be referenced later
         notEmptyLabelPairs = np.column_stack([total_occ_DF.columns[aircraft],total_occ_DF.index[b1message]])
-
         # creating a dataframe with a similar size to total occurrences df
         consec_days = pd.DataFrame().reindex_like(total_occ_DF)
 
@@ -108,10 +107,9 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
         MAINtable_array_temp = np.empty((1,21),object) # 21 = # of columns
         currentRow = 0
         MAINtable_array = []
-
+        count = 0
         # go through AC/eqnID combinations for analysis
         for i in range(len(notEmptyLabelPairs)):
-            
             # pick AC and eqn ID combo
             aircraft = notEmptyLabelPairs[i, 0]
             equation = notEmptyLabelPairs[i, 1]
@@ -139,7 +137,7 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
             or (legs >32600).any() \
             or (flags_jams == equation).any() \
             or ((flags_2in5 == equation).any() and check_2in5(dates)):
-            
+                count = count + 1
                 if total_occ_DF.at[equation, aircraft] >= MaxAllowedOccurrences:
                     flags_array.at[equation, aircraft] = flags_array.at[equation, aircraft] + "Total occurrences exceeded " + str(MaxAllowedOccurrences) + " occurrences. "
                 
@@ -279,7 +277,6 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
                         MAINtable_array_temp[0,16] = ""
                         TopCounter += 1
                 # End while
-
                 if currentRow == 0:
                     MAINtable_array = np.array(MAINtable_array_temp)      
                 else:
@@ -303,7 +300,7 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
                     "Equation Description", "Total Occurrences", "Consecutive Days", "Consecutive FL",
                     "Intermittent", "Date from", "Date to", "Reason(s) for flag", "Priority", "Known Top Message - Recommended Documents", "MEL or No-Dispatch",
                     "MHIRJ Input", "MHIRJ Recommendation", "Additional Comments"]].sort_values(by= ["Type", "Priority"]) # Tail# added to output table which means that column order has to be re orderedb8632868 2076
-
+        print("count ", count)
         listofJamMessages = list()
         all_jam_messages = connect_to_fetch_all_jam_messages()
         for each_jam_message in all_jam_messages['Jam_Message']:
