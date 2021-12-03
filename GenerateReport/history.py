@@ -128,7 +128,7 @@ def historyReport(MaxAllowedOccurrences: int, MaxAllowedConsecLegs: int, MaxAllo
             # run 
             consec_days.at[equation, aircraft] = LongestConseq(unique_arr= dates, days_legs= "days")
             consec_legs.at[equation, aircraft] = LongestConseq(unique_arr= legs, days_legs= "legs")
-            max_intermittent.at[equation, aircraft] = max(intermitt)
+            max_intermittent.at[equation, float(aircraft)] = max(intermitt)
             
             if total_occ_DF.at[equation, aircraft] >= MaxAllowedOccurrences \
             or consec_days.at[equation, aircraft] >= MaxAllowedConsecDays \
