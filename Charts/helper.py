@@ -1,8 +1,9 @@
 from app import App
 import pyodbc
-import pandas as pd
+import pandas as pd 
 import datetime
 
+App().app
 def connect_to_fetch_all_ata(from_dt, to_dt):
     conn = pyodbc.connect(driver=App().db_driver, host=App().hostname, database=App().db_name,
                               user=App().db_username, password=App().db_password)
