@@ -3269,8 +3269,13 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
         MDCdataDF["Intermittent"].fillna(value=-1, inplace=True)  # Null values preprocessing for currentflightphase
         MDCdataDF["Intermittent"].replace(to_replace=">", value="9",
                                           inplace=True)  # > represents greater than 8 Intermittent values
-        MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
-
+        # MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
+        try:                      
+        #     print("data in intermittent ",MDCdataDF["Intermittent"])            
+             MDCdataDF["Intermittent"] = int(MDCdataDF["Intermittent"]) # cast type to int
+        except:
+        #     #print("data in intermittent exec",MDCdataDF["Intermittent"])            
+            MDCdataDF["Intermittent"] = 9
         MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
         MDCdataDF.fillna(value=" ", inplace=True)  # replacing all REMAINING null values to a blank string
         MDCdataDF.sort_values(by="DateAndTime", ascending=False, inplace=True, ignore_index=True)
@@ -3710,8 +3715,14 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
         MDCdataDF["Intermittent"].fillna(value=-1, inplace=True)  # Null values preprocessing for currentflightphase
         MDCdataDF["Intermittent"].replace(to_replace=">", value="9",
                                           inplace=True)  # > represents greater than 8 Intermittent values
-        MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
-
+        # MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
+        
+        try:                      
+        #     print("data in intermittent ",MDCdataDF["Intermittent"])            
+            MDCdataDF["Intermittent"] = int(MDCdataDF["Intermittent"]) # cast type to int
+        except:
+        #     #print("data in intermittent exec",MDCdataDF["Intermittent"])            
+             MDCdataDF["Intermittent"] = 9
         MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
         MDCdataDF.fillna(value=" ", inplace=True)  # replacing all REMAINING null values to a blank string
         MDCdataDF.sort_values(by="DateAndTime", ascending=False, inplace=True, ignore_index=True)
