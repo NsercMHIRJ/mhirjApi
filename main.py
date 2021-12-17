@@ -3273,8 +3273,15 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
             i = 0
             delta = list()
             for item in prev_history_nums.values:
+                if i < curr_history.loc[False_list].values.size:
+                    if item[0] in curr_history.loc[False_list].values:
+                        tmpData = {'Tail#': item[0], 'AC SN': item[1], 'EICAS Related': item[2], 'MDC Messages': item[3], 'LRU': item[4], 'ATA': item[5],
+                        'B1-Equation': item[6], 'Type': item[7], 'Equation Description': item[8], 'Total Occurrences': item[9] , 'Consecutive Days': item[10],
+                        'Consecutive FL': item[11], 'Intermittent': item[12], 'Date From': str(item[13]), 'Date To': str(item[14]), 'Reasons For Flag': item[15],
+                        'Priority': item[16], 'MHIRJ Known Message': item[17], 'Mel or No-Dispatch': item[18], 'MHIRJ Input': item[19], 'MHIRJ Recommended Action': item[20], 
+                        'MHIRJ Additional Comment': item[21], 'Jam': item[22], 'backgroundcolor': '#fabf8f'}
                 if i < prev_history.loc[True_list].values.size:
-                    if item in prev_history.loc[True_list].values:     
+                    if item[0] in prev_history.loc[True_list].values:     
                         tmpData = {'Tail#': item[0], 'AC SN': item[1], 'EICAS Related': item[2], 'MDC Messages': item[3], 'LRU': item[4], 'ATA': item[5],
                         'B1-Equation': item[6], 'Type': item[7], 'Equation Description': item[8], 'Total Occurrences': item[9] , 'Consecutive Days': item[10],
                         'Consecutive FL': item[11], 'Intermittent': item[12], 'Date From': str(item[13]), 'Date To': str(item[14]), 'Reasons For Flag': item[15],
@@ -3288,14 +3295,6 @@ async def generateDeltaReport(analysisType: str, occurences: int, legs: int, int
                         tmpData['Consecutive FL Col'] = "#fabf8f"
                     if slice_4[0].values[i]:
                         tmpData['Intermittent Col'] = "#fabf8f"
-                if i < curr_history.loc[False_list].values.size:
-                    if item in curr_history.loc[False_list].values:
-                        tmpData = {'Tail#': item[0], 'AC SN': item[1], 'EICAS Related': item[2], 'MDC Messages': item[3], 'LRU': item[4], 'ATA': item[5],
-                        'B1-Equation': item[6], 'Type': item[7], 'Equation Description': item[8], 'Total Occurrences': item[9] , 'Consecutive Days': item[10],
-                        'Consecutive FL': item[11], 'Intermittent': item[12], 'Date From': str(item[13]), 'Date To': str(item[14]), 'Reasons For Flag': item[15],
-                        'Priority': item[16], 'MHIRJ Known Message': item[17], 'Mel or No-Dispatch': item[18], 'MHIRJ Input': item[19], 'MHIRJ Recommended Action': item[20], 
-                        'MHIRJ Additional Comment': item[21], 'Jam': item[22], 'backgroundcolor': '#fabf8f'}
-              
                 delta.append(tmpData)
                 i += 1
             list_str = json.dumps(delta)
