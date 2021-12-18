@@ -688,7 +688,13 @@ async def generateJamsReport(analysisType: str, occurences: int, legs: int, inte
     MDCdataDF["Intermittent"].fillna(value=-1, inplace=True)  # Null values preprocessing for currentflightphase
     MDCdataDF["Intermittent"].replace(to_replace=">", value="9",
                                       inplace=True)  # > represents greater than 8 Intermittent values
-    MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
+    try:                      
+            print("data in intermittent ",MDCdataDF["Intermittent"])            
+            MDCdataDF["Intermittent"] = int(MDCdataDF["Intermittent"]) # cast type to int
+    except:
+            #print("data in intermittent exec",MDCdataDF["Intermittent"])            
+            MDCdataDF["Intermittent"] = 0                                  
+    # MDCdataDF["Intermittent"] = MDCdataDF["Intermittent"].astype(int)  # cast type to int
 
     MDCdataDF["Aircraft"] = MDCdataDF["Aircraft"].str.replace('AC', '')
     MDCdataDF.fillna(value=" ", inplace=True)  # replacing all REMAINING null values to a blank string
@@ -1449,8 +1455,15 @@ async def generateJamsReport(analysisType: str, occurences: int, legs: int, inte
         FinalDF = datatofilter3.loc[pd.IndexSlice[listoftuplesACFL], :]
         print(FinalDF)
         #return FinalDF.loc[ACSN_chosen]
+        print("test acsv----------")
+        print(ACSN_chosen)
+        print("location------------")
+        print(FinalDF.loc[str(ACSN_chosen)])
         FinalDF_history_json = (FinalDF.loc[str(ACSN_chosen)]).to_json(orient='records')
         return FinalDF_history_json
+
+
+        
 
 
 # Flags Report
