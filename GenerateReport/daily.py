@@ -374,6 +374,8 @@ def dailyReport(occurences, legs, intermittent, consecutiveDays, ata, exclude_Eq
     )
     print(OutputTableDaily)
 
-    OutputTableDaily_json = OutputTableDaily.to_json(orient='records')
+    # OutputTableDaily_json = OutputTableDaily.to_json(orient='records')
+    # OutputTableDaily_json = OutputTableDaily
+    # return OutputTableDaily_json
 
-    return OutputTableDaily_json
+    return OutputTableDaily
