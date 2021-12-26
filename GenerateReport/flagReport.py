@@ -118,7 +118,7 @@ def Toreport(Flagsreport, HistoryReport,MDCdataDF,include_current_message,newrep
 
 
 
-    # DatesfoundinMDCdata = counts.loc[(AircraftSN, Bcode)].resample('D')["Counts"].sum().index
+    DatesfoundinMDCdata = counts.loc[(AircraftSN, Bcode)].resample('D')["Counts"].sum().index
     
     #create the new row that will be appended to the existing report
     newrow = indexedreport.loc[(AircraftSN, Bcode), ["Tail#", "ATA", "LRU", "MDC Message", "Type","EICAS Message", "MEL or No-Dispatch", "MHIRJ Input", "MHIRJ Recommendation", "Additional Comments"]].to_frame().transpose()
