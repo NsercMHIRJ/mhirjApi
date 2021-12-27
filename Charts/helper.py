@@ -80,3 +80,33 @@ def connect_database_for_charts(aircraft_no, equation_id, CurrentFlightPhaseEnab
     except pyodbc.Error as err:
         print("Couldn't connect to Server")
         print("Error message:- " + str(err))
+
+
+# Chart 2
+def connect_database_for_chart2(n, ata, from_dt, to_dt):
+   if len(ata) == 2:
+        sql = "SELECT * FROM Airline_MDC_Data WHERE  ATA_Main="+ata+" AND DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"'"
+   elif len(ata) == 5:  
+       sql = "SELECT * FROM Airline_MDC_Data where  ATA='"+ata+"'   AND DateAndTime BETWEEN '"+from_dt+"' AND '"+to_dt+"' "
+  
+   column_names = ["Aircraft", "Tail", "Flight Leg No",
+                   "ATA Main", "ATA Sub", "ATA", "ATA Description", "LRU",
+                   "DateAndTime", "MDC Message", "Status", "Flight Phase", "Type",
+                   "Intermittent", "Equation ID", "Source", "Diagnostic Data",
+                   "Data Used to Determine Msg", "ID", "Flight", "airline_id", "aircraftno"]
+   print(sql)
+  
+   try:
+       conn = pyodbc.connect(driver=App().db_driver, host=App().hostname, database=App().db_name,
+                              user=App().db_username, password=App().db_password)
+    #    conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+    #                          user=db_username, password=db_password)
+       chart2_sql_df = pd.read_sql(sql, conn)
+       # MDCdataDF.columns = column_names
+       # chart2_sql_df.columns = column_names
+ 
+       conn.close()
+       return chart2_sql_df
+   except pyodbc.Error as err:
+       print("Couldn't connect to Server")
+       print("Error message:- " + str(err))        
