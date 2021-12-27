@@ -331,7 +331,7 @@ async def generateFlagReport(analysisType: str, occurences: int, legs: int, inte
         newreport = True
         Flagsreport = 1
 
-        resObj= Toreport(Flagsreport,OutputTableHistory,mdcDataDF,include_current_message,newreport,list_of_tuples_acsn_bcode)
+        resObj= Toreport(Flagsreport,OutputTableHistory,mdcDataDF,include_current_message,list_of_tuples_acsn_bcode,newreport)
         print("-----this is final result ----------")
         print(resObj)
         return resObj.to_json(orient='records')
@@ -1561,8 +1561,8 @@ from typing import Optional
 # for reference -> http://localhost:8000/GenerateReport/history/2/2/2/8/('32','22')/('B1-007553', 'B1-246748')/skw/1/2020-11-11/2020-11-12/('10222','B1-006989'), ('10222','B1-007028'), ('10145','B1-007008')
 # for Daily Report: value of consecutiveDays = 0 in URL -> for reference!!       ('32','22')/('B1-007553', 'B1-246748')/skw/1/2020-11-11/2020-11-12
 # @app.post("/api/GenerateReport/{analysisType}/{occurences}/{legs}/{intermittent}/{consecutiveDays}/{ata}/{exclude_EqID}/{airline_operator}/{include_current_message}/{fromDate}/{toDate}/{flag}/{list_of_tuples_acsn_bcode}")
-# async def generateFlagReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str, flag:int, list_of_tuples_acsn_bcode):
 async def generateFlagReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str, flag:int, list_of_tuples_acsn_bcode):
+# async def generateFlagReport(analysisType: str, occurences: int, legs: int, intermittent: int, consecutiveDays: int, ata: str, exclude_EqID:str, airline_operator: str, include_current_message: int, fromDate: str , toDate: str, flag:int, list_of_tuples_acsn_bcode):
    
     print(fromDate, " ", toDate)
     """
