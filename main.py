@@ -262,6 +262,48 @@ def connect_database_TopMessagesSheet():
         print("Couldn't connect to Server")
         print("Error message:- " + err)
 
+def connect_database_for_scatter_plot_v22(from_dt, to_dt,aircraftno):
+    sql = "SELECT * FROM Airline_MDC_Data WHERE aircraftno= "+str(aircraftno)+" AND DateAndTime BETWEEN '" + from_dt + "' AND '" + to_dt + "'" 
+    column_names = ["Aircraft", "Tail", "Flight Leg No",
+                    "ATA Main", "ATA Sub", "ATA", "ATA Description", "LRU",
+                    "DateAndTime", "MDC Message", "Status", "Flight Phase", "Type",
+                    "Intermittent", "Equation ID", "Source", "Diagnostic Data",
+                    "Data Used to Determine Msg", "ID", "Flight", "airline_id", "aircraftno"]
+    print(sql)
+    try:
+        conn = pyodbc.connect(driver=db_driver, host=hostname, database=db_name,
+                              user=db_username, password=db_password)
+        MDCdataDF_chartb = pd.read_sql(sql, conn)
+        MDCdataDF_chartb.columns = column_names
+        conn.close()
+        return MDCdataDF_chartb
+    except pyodbc.Error as err:
+        print("Couldn't connect to Server")
+        print("Error message:- " + str(err))
+
+#scatter-------------------
+@app.post("/api/scatter_chart_MDC_PM/{from_date}/{to_date}/{aircraftno}")
+async def get_ScatterChart_MDC_PM_Data(from_date:str, to_date:str, aircraftno:int):
+    MDCdataDF = connect_database_for_scatter_plot_v22(from_date, to_date, aircraftno)
+    # scatter_chart_sql_df = connect_database_for_scatter_plot_v2(from_date, to_date, aircraftno)
+    Aircrafttostudy5=str(aircraftno)
+
+    # groups the data by Aircraft and Main ATA, produces a count of values in each ata by counting entries in Equation ID
+    MessageCountbyAircraftATA2 = MDCdataDF[["Aircraft","ATA Main", "Equation ID"]].groupby(["Aircraft","ATA Main"]).count()
+
+    # transpose the indexes. where the ATA label becomes the column and the aircraft is row. counts are middle
+    TransposedMessageCountbyAircraftATA2 = MessageCountbyAircraftATA2["Equation ID"].unstack()
+    print("---------------transpose-------------")
+    print(TransposedMessageCountbyAircraftATA2)
+
+    Labels8 = TransposedMessageCountbyAircraftATA2.loc["AC"+Aircrafttostudy5].dropna().sort_values(ascending= False).index
+    print("-------LABEL8---------",Labels8)
+    Counts8 = TransposedMessageCountbyAircraftATA2.loc["AC"+Aircrafttostudy5].dropna().sort_values(ascending= False) 
+    print("-------COUNT8------",Counts8)
+    
+    Count = TransposedMessageCountbyAircraftATA2.to_json(orient='records')
+    return Count        
+
 
 @app.post("/api/MDCRawData/{ATAMain_list}/{exclude_EqID_list}/{airline_operator}/{include_current_message}/{fromDate}/{toDate}")
 async def get_MDCRawData(ATAMain_list:str, exclude_EqID_list:str, airline_operator:str, include_current_message:int, fromDate: str , toDate: str):
